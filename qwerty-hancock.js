@@ -1,8 +1,18 @@
-var qwertyHancock = function (id, width, height, octaves) {
+/*
+ * Qwerty Hancock keyboard library v0.1
+ * Copyright 2012, Stuart Memo
+ * 
+ * Licensed under the MIT License
+ * http://opensource.org/licenses/mit-license.php
+ *
+ */
+
+var qwertyHancock = function (id, width, height, octaves, hoverColour) {
     var numberOfOctaves = octaves || 3,
         totalWhiteKeys = numberOfOctaves * 7,
         keyboardWidth = width || 600,
         keyboardHeight = height || 150,
+        keyboardHoverColour = hoverColour || '#076cf0',
         whiteKeyWidth = keyboardWidth / totalWhiteKeys,
         blackKeyWidth = whiteKeyWidth / 2,
         paper = new Raphael(id, keyboardWidth, keyboardHeight),
@@ -16,9 +26,9 @@ var qwertyHancock = function (id, width, height, octaves) {
         }
 
         paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({'title': notes[noteCounter], fill: 'white'}).mousedown(function () {
-            this.attr({fill: '#076cf0'});
+            this.attr({fill: keyboardHoverColour});
         }).mouseover(function () {
-            this.attr({fill: '#076cf0'});
+            this.attr({fill: keyboardHoverColour});
         }).mouseup(function () {
             this.attr({fill: 'white'});   
         }).mouseout(function () {
@@ -43,4 +53,3 @@ var qwertyHancock = function (id, width, height, octaves) {
         noteCounter++;
    }
 };
-
