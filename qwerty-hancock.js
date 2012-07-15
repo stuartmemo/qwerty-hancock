@@ -5,6 +5,7 @@
  * Licensed under the MIT License
  * http://opensource.org/licenses/mit-license.php
  *
+ * http://stuartmemo.com/qwerty-hancock
  */
 
 var qwertyHancock = function (id, width, height, octaves, hoverColour) {
@@ -18,7 +19,8 @@ var qwertyHancock = function (id, width, height, octaves, hoverColour) {
         paper = new Raphael(id, keyboardWidth, keyboardHeight),
         notes = ['A', 'B', 'C', 'D', 'E', 'F', 'G'], 
         notesWithSharps = ['A', 'C', 'D', 'F', 'G'], 
-        noteCounter = 0;
+        noteCounter = 0,
+        noteDown = false;
 
    for (var i = 0; i < totalWhiteKeys; i++) {
         if ((i % notes.length) === 0) {
@@ -26,11 +28,15 @@ var qwertyHancock = function (id, width, height, octaves, hoverColour) {
         }
 
         paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({'title': notes[noteCounter], fill: 'white'}).mousedown(function () {
+            noteDown = true;
             this.attr({fill: keyboardHoverColour});
         }).mouseover(function () {
-            this.attr({fill: keyboardHoverColour});
+            if (noteDown) {
+                this.attr({fill: keyboardHoverColour});
+            }
         }).mouseup(function () {
             this.attr({fill: 'white'});   
+            noteDown = false;
         }).mouseout(function () {
             this.attr({fill: 'white'});   
         });

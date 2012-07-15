@@ -11,8 +11,9 @@
             <h1>Qwerty Hancock</h1>
             <p>Need an interactive vector keyboard for your musical project? Qwerty Hancock is just the thing.</p>
             <p>Specify the number of keys you want on your keyboard, give it a height and a width then you're ready to use your mouse or keyboard to have the time of your life.</p>
+            <h2>Demonstration</h2>
             <div id="keyboard"></div>
-            <p>The example above is tied up to a basic sine wave synth using the Web Audio API so only you'll hear something in some browsers (Chrome for sure), but don't worry, you can use Qwerty Hancock for any project in any browser (apart from old rubbish ones.)</p>
+            <p>The example above is tied up to a basic sine wave synth using the Web Audio API, so only you'll hear something in some browsers (Chrome for sure), but don't worry, you can use Qwerty Hancock for any project in any browser (apart from old rubbish ones).</p>
             <h2>How to use</h2>
             <p>Qwerty Hancock relies on a couple of things, namely:</p>
             <ol>
@@ -31,7 +32,7 @@
             $(function () {
                 // Create new keyboard
                 // qwertyHancock(elementId, width, height, number of octaves, hover colour)
-                qwertyHancock('keyboard', 600, 150, 3, '#076cf0');
+                var keyboard = qwertyHancock('keyboard', 600, 150, 3, '#fb2a3d');
             });
         </script>
     </body>
