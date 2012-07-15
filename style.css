@@ -1,0 +1,24 @@
+html {
+    background: #050505;
+    color: #f3e939;
+    font-family: Courier, sans-serif;
+    font-size: 18px;
+}
+
+h1, a, a:visited {
+    color: #fb2a3d;
+}
+
+h2 {
+    color: #076cf0;
+}
+
+.container {
+    width: 600px;
+    margin: 40px auto;
+}
+
+.the-hancock {
+    float: right;
+    width: 300px;
+}
