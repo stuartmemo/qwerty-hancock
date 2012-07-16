@@ -8,38 +8,70 @@
  * http://stuartmemo.com/qwerty-hancock
  */
 
-var qwertyHancock = function (id, width, height, octaves, hoverColour) {
+var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, keyboardWhiteNotesColour, keyboardBlackNotesColour, keyboardHoverColour) {
     var numberOfOctaves = octaves || 3,
         totalWhiteKeys = numberOfOctaves * 7,
         keyboardWidth = width || 600,
         keyboardHeight = height || 150,
-        keyboardHoverColour = hoverColour || '#076cf0',
+        startNote = keyboardStartNote || 'A3',
+        startOctave = startNote.charAt(1),
+        whiteNotesColour = keyboardWhiteNotesColour || '#FFF',
+        blackNotesColour = keyboardBlackNotesColour || '#000',
+        hoverColour = keyboardHoverColour || '#076cf0',
         whiteKeyWidth = keyboardWidth / totalWhiteKeys,
         blackKeyWidth = whiteKeyWidth / 2,
         paper = new Raphael(id, keyboardWidth, keyboardHeight),
         notes = ['A', 'B', 'C', 'D', 'E', 'F', 'G'], 
         notesWithSharps = ['A', 'C', 'D', 'F', 'G'], 
         noteCounter = 0,
-        noteDown = false;
+        firstNote = startNote.charAt(0),
+        octaveCounter = startOctave,
+        qwertyOctave = startOctave,
+        noteDown = false,
+        keyDownCallback,
+        keyUpCallback,
+        raphKeys = [],
+        raphSharpKeys = [],
+        newNotes = [];
 
-   for (var i = 0; i < totalWhiteKeys; i++) {
+    for (var i = 0; i < 7; i++) {
+        if (firstNote === notes[i]) {
+            keyOffset = i;
+            break;
+        }
+    }
+
+    for (i = 0; i < 7; i++) {
+        if (i + keyOffset > 6) {
+            newNotes[i] = notes[i + keyOffset -7];
+        } else {
+            newNotes[i] = notes[i + keyOffset];
+        }
+    }
+
+    for (i = 0; i < totalWhiteKeys; i++) {
         if ((i % notes.length) === 0) {
             noteCounter = 0;
+            octaveCounter++;
         }
 
-        paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({'title': notes[noteCounter], fill: 'white'}).mousedown(function () {
-            noteDown = true;
-            this.attr({fill: keyboardHoverColour});
-        }).mouseover(function () {
-            if (noteDown) {
-                this.attr({fill: keyboardHoverColour});
-            }
-        }).mouseup(function () {
-            this.attr({fill: 'white'});   
-            noteDown = false;
-        }).mouseout(function () {
-            this.attr({fill: 'white'});   
-        });
+        raphKeys[i] = paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({id: newNotes[noteCounter], 'title': newNotes[noteCounter] + octaveCounter, fill: whiteNotesColour
+            }).mousedown(function () {
+                noteDown = true;
+                this.attr({fill: hoverColour});
+                keyDownCallback(this.attr('title'));
+            }).mouseover(function () {
+                if (noteDown) {
+                    this.attr({fill: hoverColour});
+                    keyDownCallback(this.attr('title'));
+                }
+            }).mouseup(function () {
+                this.attr({fill: whiteNotesColour});
+                noteDown = false;
+                keyUpCallback(this.attr('title'));
+            }).mouseout(function () {
+                this.attr({fill: whiteNotesColour});
+            });
 
         noteCounter++;
    }
@@ -49,13 +81,107 @@ var qwertyHancock = function (id, width, height, octaves, hoverColour) {
             noteCounter = 0;
         }
         for (var j = 0; j < notesWithSharps.length; j++) {
-            if (notes[noteCounter] === notesWithSharps[j]) { 
+            if (newNotes[noteCounter] === notesWithSharps[j]) { 
                 // Don't draw last black note
                 if ((whiteKeyWidth * (i + 1)) < keyboardWidth) {
-                    paper.rect((whiteKeyWidth * i) + (blackKeyWidth * 1.5) , 0, blackKeyWidth, (keyboardHeight / 3)* 2).attr({title: notes[noteCounter] + '#', fill: 'black'});
+                    raphSharpKeys[i] = paper.rect((whiteKeyWidth * i) + (blackKeyWidth * 1.5) , 0, blackKeyWidth,
+                                        (keyboardHeight / 3)* 2).attr({id: newNotes[noteCounter], title: newNotes[noteCounter] + '#' + octaveCounter, fill: blackNotesColour
+                    }).mousedown(function () {
+                        noteDown = true;
+                        this.attr({fill: hoverColour});
+                        keyDownCallback(this.attr('title'));
+                    }).mouseover(function () {
+                        if (noteDown) {
+                            this.attr({fill: hoverColour});
+                            keyDownCallback(this.attr('title'));
+                        }
+                    }).mouseup(function () {
+                        this.attr({fill: blackNotesColour});
+                       noteDown = false;
+                       keyUpCallback(this.attr('title'));
+                    }).mouseout(function () {
+                        this.attr({fill: blackNotesColour});
+                    });
                 }
             }
         }
         noteCounter++;
    }
+
+   var keyToKey = {
+        65: 'Cl',
+        87: 'C#l',
+        83: 'Dl',
+        69: 'D#l',
+        68: 'El',
+        70: 'Fl',
+        84: 'F#l',
+        71: 'Gl',
+        89: 'G#l',
+        72: 'Al',
+        85: 'A#l',
+        74: 'Bl',
+        75: 'Cu',
+        79: 'C#u',
+        76: 'Du',
+        80: 'D#u',
+        186: 'Eu',
+        222: 'Fu'
+   };
+
+   var keyboardDown = function(key) {
+       for (var i = 0; i < raphKeys.length; i++) {
+           if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphKeys[i] !== 'undefined')) {
+               var keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
+               if (raphKeys[i].attrs.title === keyPressed) {
+                   raphKeys[i].attr({fill: hoverColour});
+               }
+           }
+       }
+
+       for (i = 0; i < raphSharpKeys.length; i++) {
+           if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphSharpKeys[i] !== 'undefined')) {
+               keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
+               if (raphSharpKeys[i].attrs.title === keyPressed) {
+                   raphSharpKeys[i].attr({fill: hoverColour});
+               }
+           }
+       }
+   };
+
+   var keyboardUp = function (key) {
+        for (var i = 0; i < raphKeys.length; i++) {
+           if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphKeys[i] !== 'undefined')) {
+               var keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
+               if (raphKeys[i].attrs.title === keyPressed) {
+                   raphKeys[i].attr({fill: whiteNotesColour});
+               }
+           }
+        }
+
+        for (i = 0; i < raphSharpKeys.length; i++) {
+           if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphSharpKeys[i] !== 'undefined')) {
+               keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
+               if (raphSharpKeys[i].attrs.title === keyPressed) {
+                   raphSharpKeys[i].attr({fill: whiteNotesColour});
+               }
+           }
+        }
+   };
+
+   window.onkeydown = keyboardDown;
+   window.onkeyup = keyboardUp;
+
+   var setKeyDownCallback = function (userCallback) {
+       keyDownCallback = userCallback;
+   };
+ 
+   var setKeyUpCallback = function (userCallback) {
+       keyUpCallback = userCallback;
+   };
+
+   return {
+        keyDown: setKeyDownCallback,
+        keyUp: setKeyUpCallback
+   };
 };

@@ -18,7 +18,7 @@
             <p>Qwerty Hancock relies on a couple of things, namely:</p>
             <ol>
                 <li><a href="http://raphaeljs.com/">Raphael</a>
-                <li><a href="http://craig.is/killing/mice">Mousetrap</a> (if you want keyboard support)
+                <li>The ability to be funky
             </ol>
             <h2>Need help or have an idea to make QH better?</h2>
             <p>No problem, just give me a shout on <a href="http://twitter.com/stuartmemo">Twitter</a>.</p>
@@ -27,12 +27,25 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="raphael-min.js"></script>
+        <script src="mousetrap.min.js"></script>
+        <script src="saw-synth.js"></script>
         <script src="../qwerty-hancock.js"></script>
         <script>
             $(function () {
-                // Create new keyboard
-                // qwertyHancock(elementId, width, height, number of octaves, hover colour)
-                var keyboard = qwertyHancock('keyboard', 600, 150, 3, '#fb2a3d');
+                // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
+                var keyboard = qwertyHancock('keyboard', null, 150, null, 'A3', 'white', 'black', 'yellow');
+
+                oscillator.noteOn(0);
+
+                keyboard.keyDown(function (note, frequency) {
+                    gainNode.gain.value = 1;
+                    console.log(note);
+                });
+
+                keyboard.keyUp(function (note, frequency) {
+                    gainNode.gain.value = 0;
+                    console.log(note);
+                });
             });
         </script>
     </body>
