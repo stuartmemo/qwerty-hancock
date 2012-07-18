@@ -33,11 +33,13 @@
         <script>
             $(function () {
                 // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
-                var keyboard = qwertyHancock('keyboard', null, 150, null, 'A3', 'white', 'black', 'yellow');
+                var keyboard = qwertyHancock('keyboard', null, 150, null, 'C3', 'white', 'black', 'yellow');
 
                 oscillator.noteOn(0);
+                gainNode.gain.value = 0;
 
                 keyboard.keyDown(function (note, frequency) {
+                    oscillator.frequency.value = frequency;
                     gainNode.gain.value = 1;
                     console.log(note);
                 });

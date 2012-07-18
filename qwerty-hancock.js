@@ -21,7 +21,7 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
         whiteKeyWidth = keyboardWidth / totalWhiteKeys,
         blackKeyWidth = whiteKeyWidth / 2,
         paper = new Raphael(id, keyboardWidth, keyboardHeight),
-        notes = ['A', 'B', 'C', 'D', 'E', 'F', 'G'], 
+        notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'], 
         notesWithSharps = ['A', 'C', 'D', 'F', 'G'], 
         noteCounter = 0,
         firstNote = startNote.charAt(0),
@@ -33,6 +33,16 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
         raphKeys = [],
         raphSharpKeys = [],
         newNotes = [];
+
+    var getFrequency = function (note, octave) {
+        var notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+
+        console.log(note);
+        console.log(octave);
+        var keyNumber = notes.indexOf(note) * octave; 
+        // Return frequency of note
+        return 440 * Math.pow(2, (keyNumber- 49) / 12);
+    };
 
     for (var i = 0; i < 7; i++) {
         if (firstNote === notes[i]) {
@@ -55,15 +65,18 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
             octaveCounter++;
         }
 
+        var bizarreNoteCounter = (newNotes[noteCounter]);
+
         raphKeys[i] = paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({id: newNotes[noteCounter], 'title': newNotes[noteCounter] + octaveCounter, fill: whiteNotesColour
             }).mousedown(function () {
                 noteDown = true;
                 this.attr({fill: hoverColour});
-                keyDownCallback(this.attr('title'));
+                keyDownCallback(this.attr('title'), getFrequency(bizarreNoteCounter, octaveCounter));
             }).mouseover(function () {
                 if (noteDown) {
                     this.attr({fill: hoverColour});
-                    keyDownCallback(this.attr('title'));
+                keyDownCallback(this.attr('title'), getFrequency(bizarreNoteCounter, octaveCounter));
+                //    keyDownCallback(this.attr('title'), getFrequency(newNotes[noteCounter], octaveCounter));
                 }
             }).mouseup(function () {
                 this.attr({fill: whiteNotesColour});
@@ -167,7 +180,8 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
                }
            }
         }
-   };
+    };
+
 
    window.onkeydown = keyboardDown;
    window.onkeyup = keyboardUp;
