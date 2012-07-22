@@ -27,13 +27,12 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="raphael-min.js"></script>
-        <script src="mousetrap.min.js"></script>
         <script src="saw-synth.js"></script>
         <script src="../qwerty-hancock.js"></script>
         <script>
             $(function () {
                 // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
-                var keyboard = qwertyHancock('keyboard', null, 150, null, 'C3', 'white', 'black', 'yellow');
+                var keyboard = qwertyHancock('keyboard', null, 150, null, 'C2', 'white', 'black', 'yellow');
 
                 oscillator.noteOn(0);
                 gainNode.gain.value = 0;
@@ -41,12 +40,10 @@
                 keyboard.keyDown(function (note, frequency) {
                     oscillator.frequency.value = frequency;
                     gainNode.gain.value = 1;
-                    console.log(note);
                 });
 
                 keyboard.keyUp(function (note, frequency) {
                     gainNode.gain.value = 0;
-                    console.log(note);
                 });
             });
         </script>
