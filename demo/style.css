@@ -5,12 +5,18 @@ html {
     font-size: 18px;
 }
 
-h1, a, a:visited {
+h1, h2 {
+    font-family: 'Press Start 2P', cursive;
+}
+
+h1, a, a:visited, pre {
     color: #fb2a3d;
 }
 
 h2 {
     color: #076cf0;
+    font-size: 1.3em;
+    line-height: 1.3em;
 }
 
 .container {
@@ -21,4 +27,8 @@ h2 {
 .the-hancock {
     float: right;
     width: 300px;
+}
+
+pre {
+    margin-left: 0;
 }

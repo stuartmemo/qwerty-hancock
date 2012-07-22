@@ -2,24 +2,50 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <title>Qwerty Hancock &mdash; vector JavaScript keyboard for web-based projects</title>
+        <title>Qwerty Hancock &mdash; vector JavaScript keyboard for web audio projects</title>
+        <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>
         <link rel="stylesheet" href="style.css"/>
     </head>
     <body>
         <div class="container">
             <img class="the-hancock" src="qwerty-hancock.png"/>
             <h1>Qwerty Hancock</h1>
-            <p>Need an interactive vector keyboard for your musical project? Qwerty Hancock is just the thing.</p>
-            <p>Specify the number of keys you want on your keyboard, give it a height and a width then you're ready to use your mouse or keyboard to have the time of your life.</p>
+            <p>Need an interactive vector keyboard for your web audio project? Qwerty Hancock is just the thing.</p>
+            <p>Specify the number of keys, give it a height and a width then you're ready to use your mouse or keyboard to have the time of your life.</p>
             <h2>Demonstration</h2>
             <div id="keyboard"></div>
-            <p>The example above is tied up to a basic sine wave synth using the Web Audio API, so only you'll hear something in some browsers (Chrome for sure), but don't worry, you can use Qwerty Hancock for any project in any browser (apart from old rubbish ones).</p>
+            <p>The example above is hooked-up to a basic square wave synth using the Web Audio API. That means you'll only hear something in <a href="http://www.google.co.uk/chrome">Chrome</a> for the moment, but don't worry, you can use Qwerty Hancock for any project in any browser (apart from the old rubbish ones).</p>
+            <h2>Download</h2>
+            <p>The best way to start playing with Qwerty Hancock is to grab it from <a href="https://github.com/stuartmemo/qwerty-hancock">GitHub</a>
             <h2>How to use</h2>
             <p>Qwerty Hancock relies on a couple of things, namely:</p>
             <ol>
-                <li><a href="http://raphaeljs.com/">Raphael</a>
-                <li>The ability to be funky
+                <li><a href="http://raphaeljs.com/">Raphael</a></li>
+                <li>Being funky</li></li>
             </ol>
+            <p>Once you've included Raphael in your project, a keyboard is created by calling the following function with fairly self-explanitory parameters.</p>
+            <ol>
+                <li>The id of the &lt;div&gt; that is going to "hold" your keyboard</li>
+                <li>The width in pixels of your keyboard</li>
+                <li>The height in pixels of your keyboard</li>
+                <li>The number of octaves your keyboard should span</li>
+                <li>The first note of your keyboard with octave</li>
+                <li>The colour of the white "natural" keys</li>
+                <li>The colour of the black "incidental" keys</li>
+                <li>The keyOn hover colour</li>
+            </ol>
+            <p>A real-world example might look like this:</p>
+            <pre>var keyboard = qwertyHancock('keyboard', 600, 150, 3,
+                   'A3', 'white', 'black', '#f3e939');</pre>
+            <p>This will show us a lovely keyboard, but how do we get it to make some noise? Qwerty Hancock provides two handy hooks into which you can add your own functions.</p>
+            <pre>keyboard.keyDown(function (note, frequency) {
+    // Your code here
+});
+
+keyboard.keyDown(function (note, frequency) {
+    // Your code here
+});</pre>
+            <p>If you want to tie your keyboard into the Web Audio API, just view the source of this very page.</p>
             <h2>Need help or have an idea to make QH better?</h2>
             <p>No problem, just give me a shout on <a href="http://twitter.com/stuartmemo">Twitter</a>.</p>
             <footer>Copyright 2012 <a href="http://stuartmemo.com">Stuart Memo</a>.<br/>
