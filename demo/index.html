@@ -27,23 +27,34 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="raphael-min.js"></script>
-        <script src="saw-synth.js"></script>
         <script src="../qwerty-hancock.js"></script>
         <script>
             $(function () {
                 // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
-                var keyboard = qwertyHancock('keyboard', null, 150, null, 'C2', 'white', 'black', 'yellow');
+                var keyboard = qwertyHancock('keyboard', null, 150, null, 'A3', 'white', 'black', 'yellow');
 
-                oscillator.noteOn(0);
-                gainNode.gain.value = 0;
+                var context = new webkitAudioContext(),
+                    nodes = [];
 
                 keyboard.keyDown(function (note, frequency) {
+                    var oscillator = context.createOscillator(),
+                        gainNode = context.createGainNode();
+
+                    oscillator.type = 1;
                     oscillator.frequency.value = frequency;
-                    gainNode.gain.value = 1;
+                    gainNode.gain.value = 0.3;
+                    oscillator.connect(gainNode);
+                    gainNode.connect(context.destination); 
+                    oscillator.noteOn(0);
+                    nodes.push(oscillator);
                 });
 
                 keyboard.keyUp(function (note, frequency) {
-                    gainNode.gain.value = 0;
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (Math.round(nodes[i].frequency.value) === Math.round(frequency)) {
+                            nodes[i].disconnect();
+                        }
+                    }
                 });
             });
         </script>

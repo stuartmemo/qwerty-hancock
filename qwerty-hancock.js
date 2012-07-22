@@ -74,12 +74,14 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
     for (i = 0; i < totalWhiteKeys; i++) {
         if ((i % notes.length) === 0) {
             noteCounter = 0;
-            octaveCounter++;
         }
 
         var bizarreNoteCounter = (newNotes[noteCounter]);
+        if (bizarreNoteCounter === 'C') {
+            octaveCounter++;
+        }
 
-        raphKeys[i] = paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({id: newNotes[noteCounter], title: newNotes[noteCounter] + octaveCounter, fill: whiteNotesColour
+        raphKeys[i] = paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({id: newNotes[noteCounter], title: newNotes[noteCounter] + (octaveCounter - 1), fill: whiteNotesColour
             }).mousedown(function () {
                 noteDown = true;
                 this.attr({fill: hoverColour});
@@ -95,6 +97,7 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
                 keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
             }).mouseout(function () {
                 this.attr({fill: whiteNotesColour});
+                keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
             });
 
         noteCounter++;
@@ -105,14 +108,17 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
     for (i = 0; i < totalWhiteKeys; i++) {
         if ((i % notes.length) === 0) {
             noteCounter = 0;
-            octaveCounter++;
         }
         for (var j = 0; j < notesWithSharps.length; j++) {
             if (newNotes[noteCounter] === notesWithSharps[j]) { 
+                bizarreNoteCounter = (newNotes[noteCounter] + '#');
+                if (bizarreNoteCounter === 'C#') {
+                    octaveCounter++;
+                }
                 // Don't draw last black note
                 if ((whiteKeyWidth * (i + 1)) < keyboardWidth) {
                     raphSharpKeys[i] = paper.rect((whiteKeyWidth * i) + (blackKeyWidth * 1.5) , 0, blackKeyWidth,
-                                        (keyboardHeight / 3)* 2).attr({id: newNotes[noteCounter], title: newNotes[noteCounter] + '#' + octaveCounter, fill: blackNotesColour
+                                        (keyboardHeight / 3)* 2).attr({id: newNotes[noteCounter], title: newNotes[noteCounter] + '#' + (octaveCounter - 1), fill: blackNotesColour
                     }).mousedown(function () {
                         noteDown = true;
                         this.attr({fill: hoverColour});
@@ -128,6 +134,7 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
                        keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                     }).mouseout(function () {
                         this.attr({fill: blackNotesColour});
+                        keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                     });
                 }
             }
@@ -172,7 +179,7 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
                keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
                if (raphSharpKeys[i].attrs.title === keyPressed) {
                    raphSharpKeys[i].attr({fill: hoverColour});
-                   keyDownCallback(raphKeys[i].attrs.title, getFrequency(raphKeys[i].attrs.title));
+                   keyDownCallback(keyPressed, getFrequency(keyPressed));
                }
            }
        }
@@ -194,7 +201,7 @@ var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, key
                keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
                if (raphSharpKeys[i].attrs.title === keyPressed) {
                    raphSharpKeys[i].attr({fill: blackNotesColour});
-                   keyUpCallback(raphKeys[i].attrs.title, getFrequency(raphKeys[i].attrs.title));
+                   keyUpCallback(keyPressed, getFrequency(keyPressed));
                }
            }
         }
