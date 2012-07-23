@@ -71,7 +71,6 @@ keyboard.keyDown(function (note, frequency) {
                     gainNode.gain.value = 0.3;
                     oscillator.connect(gainNode);
                     gainNode.connect(context.destination); 
-                    oscillator.noteOn(0);
                     nodes.push(oscillator);
                 });
 
