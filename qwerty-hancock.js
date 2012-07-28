@@ -9,7 +9,7 @@
  */
 
 (function( window, undefined ) {
-    var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, keyboardWhiteNotesColour, keyboardBlackNotesColour, keyboardHoverColour) {
+    var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, keyboardWhiteNotesColour, keyboardBlackNotesColour, keyboardHoverColour, keyboardLayout) {
         var numberOfOctaves = octaves || 3,
             totalWhiteKeys = numberOfOctaves * 7,
             keyboardWidth = width || 600,
@@ -21,6 +21,7 @@
             hoverColour = keyboardHoverColour || '#076cf0',
             whiteKeyWidth = keyboardWidth / totalWhiteKeys,
             blackKeyWidth = whiteKeyWidth / 2,
+            keyboardLayout = keyboardLayout || "en",
             paper = new Raphael(id, keyboardWidth, keyboardHeight),
             notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'], 
             notesWithSharps = ['A', 'C', 'D', 'F', 'G'], 
@@ -143,7 +144,8 @@
             noteCounter++;
        }
 
-       var keyToKey = {
+        if (keyboardLayout == "en"){
+          var keyToKey = {
             65: 'Cl',
             87: 'C#l',
             83: 'Dl',
@@ -162,7 +164,30 @@
             80: 'D#u',
             186: 'Eu',
             222: 'Fu'
-       };
+         };
+        }
+        else if (keyboardLayout == "de"){
+            var keyToKey = {
+            65: 'Cl',
+            87: 'C#l',
+            83: 'Dl',
+            69: 'D#l',
+            68: 'El',
+            70: 'Fl',
+            84: 'F#l',
+            71: 'Gl',
+            90: 'G#l',
+            72: 'Al',
+            85: 'A#l',
+            74: 'Bl',
+            75: 'Cu',
+            79: 'C#u',
+            76: 'Du',
+            80: 'D#u',
+            186: 'Eu',
+            222: 'Fu'
+         };
+        }
 
        var keyboardDown = function(key) {
            for (var i = 0; i < raphKeys.length; i++) {
