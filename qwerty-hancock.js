@@ -32,6 +32,7 @@
             noteDown = false,
             keyDownCallback,
             keyUpCallback,
+            keysDown = {},
             raphKeys = [],
             raphSharpKeys = [],
             newNotes = [];
@@ -190,6 +191,8 @@
         }
 
        var keyboardDown = function(key) {
+           if (key.keyCode in keysDown) return;
+           keysDown[key.keyCode] = true;
            for (var i = 0; i < raphKeys.length; i++) {
                if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphKeys[i] !== 'undefined')) {
                    var keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
@@ -212,6 +215,7 @@
        };
 
        var keyboardUp = function (key) {
+            delete keysDown[key.keyCode];
             for (var i = 0; i < raphKeys.length; i++) {
                if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphKeys[i] !== 'undefined')) {
                    var keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
