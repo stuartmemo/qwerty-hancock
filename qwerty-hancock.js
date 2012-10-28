@@ -99,8 +99,10 @@
                     noteDown = false;
                     keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                 }).mouseout(function () {
-                    this.attr({fill: whiteNotesColour});
-                    keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
+                    if (noteDown) {
+                      this.attr({fill: whiteNotesColour});
+                      keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
+                    }
                 });
 
             noteCounter++;
@@ -132,12 +134,14 @@
                                 keyDownCallback(this.attr('title'), getFrequency(this.attrs.title));
                             }
                         }).mouseup(function () {
-                            this.attr({fill: blackNotesColour});
+                          this.attr({fill: blackNotesColour});
                            noteDown = false;
                            keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                         }).mouseout(function () {
-                            this.attr({fill: blackNotesColour});
-                            keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
+                            if (noteDown) {
+                              this.attr({fill: blackNotesColour});
+                              keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
+                            }
                         });
                     }
                 }
