@@ -57,7 +57,17 @@ keyboard.keyDown(function (note, frequency) {
         <script>
             $(function () {
                 // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
-                var keyboard = qwertyHancock('keyboard', null, 150, null, 'A3', 'white', 'black', 'yellow');
+
+                var settings = {
+                    id: 'keyboard',
+                    height: 150,
+                    startNote: 'A3',
+                    whiteNotesColour: 'white',
+                    blackNotesColour: 'black',
+                    hoverColour: 'yellow'
+                };
+
+                var keyboard = qwertyHancock(settings);
 
                 var context = new webkitAudioContext(),
                     nodes = [];

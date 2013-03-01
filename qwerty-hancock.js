@@ -1,6 +1,6 @@
 /*
- * Qwerty Hancock keyboard library v0.1
- * Copyright 2012, Stuart Memo
+ * Qwerty Hancock keyboard library v0.2
+ * Copyright 2012-13, Stuart Memo
  * 
  * Licensed under the MIT License
  * http://opensource.org/licenses/mit-license.php
@@ -9,19 +9,21 @@
  */
 
 (function( window, undefined ) {
-    var qwertyHancock = function (id, width, height, octaves, keyboardStartNote, keyboardWhiteNotesColour, keyboardBlackNotesColour, keyboardHoverColour, keyboardLayout) {
-        var numberOfOctaves = octaves || 3,
+    var qwertyHancock = function (settings) {
+
+        var id = settings.id || 'keyboard',
+            numberOfOctaves = settings.octaves || 3,
             totalWhiteKeys = numberOfOctaves * 7,
-            keyboardWidth = width || 600,
-            keyboardHeight = height || 150,
-            startNote = keyboardStartNote || 'A3',
+            keyboardWidth = settings.width || 600,
+            keyboardHeight = settings.height || 150,
+            startNote = settings.startNote || 'A3',
             startOctave = startNote.charAt(1),
-            whiteNotesColour = keyboardWhiteNotesColour || '#FFF',
-            blackNotesColour = keyboardBlackNotesColour || '#000',
-            hoverColour = keyboardHoverColour || '#076cf0',
+            whiteNotesColour = settings.whiteNotesColour || '#FFF',
+            blackNotesColour = settings.blackNotesColour || '#000',
+            hoverColour = settings.hoverColour || '#076cf0',
             whiteKeyWidth = keyboardWidth / totalWhiteKeys,
             blackKeyWidth = whiteKeyWidth / 2,
-            keyboardLayout = keyboardLayout || "en",
+            keyboardLayout = settings.keyboardLayout || "en",
             paper = new Raphael(id, keyboardWidth, keyboardHeight),
             notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'], 
             notesWithSharps = ['A', 'C', 'D', 'F', 'G'], 
@@ -36,6 +38,9 @@
             raphKeys = [],
             raphSharpKeys = [],
             newNotes = [];
+
+        // reset div height
+        document.getElementById(id).style.fontSize = '0px'; 
 
         var getFrequency = function (note) {
             var notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
@@ -80,6 +85,7 @@
             }
 
             var bizarreNoteCounter = (newNotes[noteCounter]);
+
             if (bizarreNoteCounter === 'C') {
                 octaveCounter++;
             }
@@ -106,7 +112,7 @@
                 });
 
             noteCounter++;
-       }
+        }
 
         octaveCounter = startOctave;
 
@@ -147,56 +153,59 @@
                 }
             }
             noteCounter++;
-       }
-
-        if (keyboardLayout == "en"){
-          var keyToKey = {
-            65: 'Cl',
-            87: 'C#l',
-            83: 'Dl',
-            69: 'D#l',
-            68: 'El',
-            70: 'Fl',
-            84: 'F#l',
-            71: 'Gl',
-            89: 'G#l',
-            72: 'Al',
-            85: 'A#l',
-            74: 'Bl',
-            75: 'Cu',
-            79: 'C#u',
-            76: 'Du',
-            80: 'D#u',
-            186: 'Eu',
-            222: 'Fu'
-         };
         }
-        else if (keyboardLayout == "de"){
+
+        if (keyboardLayout == "en") {
             var keyToKey = {
-            65: 'Cl',
-            87: 'C#l',
-            83: 'Dl',
-            69: 'D#l',
-            68: 'El',
-            70: 'Fl',
-            84: 'F#l',
-            71: 'Gl',
-            90: 'G#l',
-            72: 'Al',
-            85: 'A#l',
-            74: 'Bl',
-            75: 'Cu',
-            79: 'C#u',
-            76: 'Du',
-            80: 'D#u',
-            186: 'Eu',
-            222: 'Fu'
-         };
+                65: 'Cl',
+                87: 'C#l',
+                83: 'Dl',
+                69: 'D#l',
+                68: 'El',
+                70: 'Fl',
+                84: 'F#l',
+                71: 'Gl',
+                89: 'G#l',
+                72: 'Al',
+                85: 'A#l',
+                74: 'Bl',
+                75: 'Cu',
+                79: 'C#u',
+                76: 'Du',
+                80: 'D#u',
+                186: 'Eu',
+                222: 'Fu'
+            };
+        } else if (keyboardLayout == "de") {
+            var keyToKey = {
+                65: 'Cl',
+                87: 'C#l',
+                83: 'Dl',
+                69: 'D#l',
+                68: 'El',
+                70: 'Fl',
+                84: 'F#l',
+                71: 'Gl',
+                90: 'G#l',
+                72: 'Al',
+                85: 'A#l',
+                74: 'Bl',
+                75: 'Cu',
+                79: 'C#u',
+                76: 'Du',
+                80: 'D#u',
+                186: 'Eu',
+                222: 'Fu'
+            };
         }
 
-       var keyboardDown = function(key) {
-           if (key.keyCode in keysDown) return;
+        var keyboardDown = function (key) {
+           if (key.keyCode in keysDown) {
+               return;
+           }
+
            keysDown[key.keyCode] = true;
+
            for (var i = 0; i < raphKeys.length; i++) {
                if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphKeys[i] !== 'undefined')) {
                    var keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
