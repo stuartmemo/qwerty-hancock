@@ -1,8 +1,11 @@
+
 <!doctype html>
 <html>
     <head>
         <meta charset="utf-8"/>
         <title>Qwerty Hancock &mdash; vector JavaScript keyboard for web audio projects</title>
+        <meta name="description" content="Qwerty Hancock is a vector JavaScript keyboard for your web audio project." />
+        <meta name="author" content="Stuart Memo" />
         <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>
         <link rel="stylesheet" href="style.css"/>
     </head>
@@ -23,32 +26,59 @@
                 <li><a href="http://raphaeljs.com/">Raphael</a></li>
                 <li>Being funky</li></li>
             </ol>
-            <p>Once you've included Raphael in your project, a keyboard is created by calling the following function with fairly self-explanitory parameters.</p>
-            <ol>
-                <li>The id of the &lt;div&gt; that is going to "hold" your keyboard</li>
-                <li>The width in pixels of your keyboard</li>
-                <li>The height in pixels of your keyboard</li>
-                <li>The number of octaves your keyboard should span</li>
-                <li>The first note of your keyboard with octave</li>
-                <li>The colour of the white "natural" keys</li>
-                <li>The colour of the black "incidental" keys</li>
-                <li>The keyOn hover colour</li>
-            </ol>
+            <p>Once you've included Raphael in your project, a keyboard is created by calling the following function with an object containing some fairly self-explanitory attributes.</p>
+            <dl>
+                <dt>id:</dt>
+                <dd>The id of the &lt;div&gt; that is going to "hold" your keyboard</dd>
+
+                <dt>width:</dt>
+                <dd>The width in pixels of your keyboard</dd>
+
+                <dt>height:</dt>
+                <dd>The height in pixels of your keyboard</dd>
+
+                <dt>octaves:</dt>
+                <dd>The number of octaves your keyboard should span</dd>
+
+                <dt>startNote:</dt>
+                <dd>The first note of your keyboard with octave</dd>
+
+                <dt>whiteKeyColour</dt>
+                <dd>The colour of the white "natural" keys</dd>
+
+                <dt>blackKeyColour:</dt>
+                <dd>The colour of the black "accidental" keys</dd>
+
+                <dt>hoverColour:</dt>
+                <dd>The keyOn hover colour</dd>
+
+                <dt>keyboardLayout:</dt>
+                <dd>Currently supports "en" and "de"</dd>
+            </dl>
             <p>A real-world example might look like this:</p>
-            <pre>var keyboard = qwertyHancock('keyboard', 600, 150, 3,
-                   'A3', 'white', 'black', '#f3e939');</pre>
+            <pre>var keyboard = qwertyHancock({
+                 id: 'keyboard',
+                 width: 600,
+                 height: 150,
+                 octaves: 2,
+                 startNote: 'A3',
+                 whiteNotesColour: 'white',
+                 blackNotesColour: 'black',
+                 hoverColour: '#f3e939',
+                 keyboardLayout: 'en'
+            });</pre>
             <p>This will show us a lovely keyboard, but how do we get it to make some noise? Qwerty Hancock provides two handy hooks into which you can add your own functions.</p>
             <pre>keyboard.keyDown(function (note, frequency) {
     // Your code here
 });
 
-keyboard.keyDown(function (note, frequency) {
+keyboard.keyUp(function (note, frequency) {
     // Your code here
 });</pre>
             <p>If you want to tie your keyboard into the Web Audio API, just view the source of this very page.</p>
             <h2>Need help or have an idea to make QH better?</h2>
             <p>No problem, just give me a shout on <a href="http://twitter.com/stuartmemo">Twitter</a>.</p>
-            <footer>Copyright 2012 <a href="http://stuartmemo.com">Stuart Memo</a>.<br/>
+            <footer>Copyright 2012-13 <a href="http://stuartmemo.com">Stuart Memo</a>.<br/>
             Released under MIT licence.</footer>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -57,14 +87,15 @@ keyboard.keyDown(function (note, frequency) {
         <script>
             $(function () {
                 // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
-
                 var settings = {
                     id: 'keyboard',
+                    width: 600,
                     height: 150,
                     startNote: 'A3',
                     whiteNotesColour: 'white',
                     blackNotesColour: 'black',
-                    hoverColour: 'yellow'
+                    hoverColour: 'yellow',
+                    octaves: 2
                 };
 
                 var keyboard = qwertyHancock(settings);
@@ -80,6 +111,9 @@ keyboard.keyDown(function (note, frequency) {
                     oscillator.frequency.value = frequency;
                     gainNode.gain.value = 0.3;
                     oscillator.connect(gainNode);
+                    if (typeof oscillator.noteOn !== 'undefined') {
+                        oscillator.noteOn(0);
+                    }
                     gainNode.connect(context.destination); 
                     nodes.push(oscillator);
                 });
@@ -87,11 +121,26 @@ keyboard.keyDown(function (note, frequency) {
                 keyboard.keyUp(function (note, frequency) {
                     for (var i = 0; i < nodes.length; i++) {
                         if (Math.round(nodes[i].frequency.value) === Math.round(frequency)) {
+                            if (typeof nodes[i].noteOff !== 'undefined') {
+                                nodes[i].noteOff(0);
+                            }
                             nodes[i].disconnect();
                         }
                     }
                 });
             });
+        </script>
+        <script>
+            // Analytics
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-32368229-1']);
+            _gaq.push(['_trackPageview']);
+
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
         </script>
     </body>
 </html>

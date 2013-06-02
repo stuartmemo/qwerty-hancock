@@ -8,7 +8,7 @@
  * http://stuartmemo.com/qwerty-hancock
  */
 
-(function( window, undefined ) {
+(function(window, undefined) {
     var qwertyHancock = function (settings) {
 
         var id = settings.id || 'keyboard',
@@ -18,11 +18,12 @@
             keyboardHeight = settings.height || 150,
             startNote = settings.startNote || 'A3',
             startOctave = startNote.charAt(1),
-            whiteNotesColour = settings.whiteNotesColour || '#FFF',
-            blackNotesColour = settings.blackNotesColour || '#000',
+            whiteKeyColour = settings.whiteKeyColour || '#FFF',
+            blackKeyColour = settings.blackKeyColour || '#000',
             hoverColour = settings.hoverColour || '#076cf0',
             whiteKeyWidth = keyboardWidth / totalWhiteKeys,
-            blackKeyWidth = whiteKeyWidth / 2,
+            blackKeyWidth = settings.blackKeyWidth || whiteKeyWidth / 2,
+            blackKeyHeight = settings.blackKeyHeight || keyboardHeight / 3,
             keyboardLayout = settings.keyboardLayout || "en",
             paper = new Raphael(id, keyboardWidth, keyboardHeight),
             notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'], 
@@ -39,7 +40,7 @@
             raphSharpKeys = [],
             newNotes = [];
 
-        // reset div height
+        // Reset div height.
         document.getElementById(id).style.fontSize = '0px'; 
 
         var getFrequency = function (note) {
@@ -90,8 +91,12 @@
                 octaveCounter++;
             }
 
-            raphKeys[i] = paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr({id: newNotes[noteCounter], title: newNotes[noteCounter] + (octaveCounter - 1), fill: whiteNotesColour
-                }).mousedown(function () {
+            raphKeys[i] = paper.rect(whiteKeyWidth * i, 0, whiteKeyWidth, keyboardHeight).attr(
+                {
+                    id: newNotes[noteCounter],
+                    title: newNotes[noteCounter] + (octaveCounter - 1),
+                    fill: whiteKeyColour
+                } ).mousedown(function () {
                     noteDown = true;
                     this.attr({fill: hoverColour});
                     keyDownCallback(this.attr('title'), getFrequency(this.attrs.title));
@@ -101,12 +106,12 @@
                         keyDownCallback(this.attr('title'), getFrequency(this.attrs.title));
                     }
                 }).mouseup(function () {
-                    this.attr({fill: whiteNotesColour});
+                    this.attr({fill: whiteKeyColour});
                     noteDown = false;
                     keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                 }).mouseout(function () {
                     if (noteDown) {
-                      this.attr({fill: whiteNotesColour});
+                      this.attr({fill: whiteKeyColour});
                       keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                     }
                 });
@@ -128,9 +133,14 @@
                     }
                     // Don't draw last black note
                     if ((whiteKeyWidth * (i + 1)) < keyboardWidth) {
-                        raphSharpKeys[i] = paper.rect((whiteKeyWidth * i) + (blackKeyWidth * 1.5) , 0, blackKeyWidth,
-                                            (keyboardHeight / 3)* 2).attr({id: newNotes[noteCounter], title: newNotes[noteCounter] + '#' + (octaveCounter - 1), fill: blackNotesColour
-                        }).mousedown(function () {
+                        raphSharpKeys[i] = paper.rect((whiteKeyWidth * (i + 1)) - (blackKeyWidth / 2), 0, blackKeyWidth,
+                                            blackKeyHeight).attr(
+                                                {
+                                                    id: newNotes[noteCounter],
+                                                    title: newNotes[noteCounter] + '#' + (octaveCounter - 1),
+                                                    fill: blackKeyColour
+                                                }
+                        ).mousedown(function () {
                             noteDown = true;
                             this.attr({fill: hoverColour});
                             keyDownCallback(this.attr('title'), getFrequency(this.attrs.title));
@@ -140,12 +150,12 @@
                                 keyDownCallback(this.attr('title'), getFrequency(this.attrs.title));
                             }
                         }).mouseup(function () {
-                          this.attr({fill: blackNotesColour});
+                          this.attr({fill: blackKeyColour});
                            noteDown = false;
                            keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                         }).mouseout(function () {
                             if (noteDown) {
-                              this.attr({fill: blackNotesColour});
+                              this.attr({fill: blackKeyColour});
                               keyUpCallback(this.attr('title'), getFrequency(this.attrs.title));
                             }
                         });
@@ -238,7 +248,7 @@
                if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphKeys[i] !== 'undefined')) {
                    var keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
                    if (raphKeys[i].attrs.title === keyPressed) {
-                       raphKeys[i].attr({fill: whiteNotesColour});
+                       raphKeys[i].attr({fill: whiteKeyColour});
                        keyUpCallback(raphKeys[i].attrs.title, getFrequency(raphKeys[i].attrs.title));
                    }
                }
@@ -248,7 +258,7 @@
                if ((typeof keyToKey[key.keyCode] !== 'undefined') && (typeof raphSharpKeys[i] !== 'undefined')) {
                    keyPressed = keyToKey[key.keyCode].replace('l', qwertyOctave).replace('u', (parseInt(qwertyOctave, 10) + 1).toString());
                    if (raphSharpKeys[i].attrs.title === keyPressed) {
-                       raphSharpKeys[i].attr({fill: blackNotesColour});
+                       raphSharpKeys[i].attr({fill: blackKeyColour});
                        keyUpCallback(keyPressed, getFrequency(keyPressed));
                    }
                }
