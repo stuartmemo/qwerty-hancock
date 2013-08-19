@@ -1,0 +1,9 @@
+{
+    "name": "qwerty-hancock",
+    "title": "Qwerty Hancock",
+    "version": "0.2.0",
+    "devDependencies": {
+        "grunt": "latest",
+        "grunt-contrib-uglify": "latest"
+    }
+}
