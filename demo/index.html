@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
     <head>
@@ -17,7 +16,7 @@
             <p>Specify the number of keys, give it a height and a width then you're ready to use your mouse or keyboard to have the time of your life.</p>
             <h2>Demonstration</h2>
             <div id="keyboard"></div>
-            <p>The example above is hooked-up to a basic square wave synth using the Web Audio API. That means you'll only hear something in <a href="http://www.google.co.uk/chrome">Chrome</a> for the moment, but don't worry, you can use Qwerty Hancock for any project in any browser (apart from the old rubbish ones).</p>
+            <p>The example above is hooked-up to a basic square wave synth using the Web Audio API. That means you'll only hear something in <a href="http://www.google.co.uk/chrome">Chrome</a> and <a href="http://apple.com/safari">Safari</a> for the moment, but don't worry, you can use Qwerty Hancock for any project in any browser (apart from the old rubbish ones).</p>
             <h2>Download</h2>
             <p>The best way to start playing with Qwerty Hancock is to grab it from <a href="https://github.com/stuartmemo/qwerty-hancock">GitHub</a>
             <h2>How to use</h2>
@@ -43,10 +42,10 @@
                 <dt>startNote:</dt>
                 <dd>The first note of your keyboard with octave</dd>
 
-                <dt>whiteKeyColour</dt>
+                <dt>whiteNotesColour</dt>
                 <dd>The colour of the white "natural" keys</dd>
 
-                <dt>blackKeyColour:</dt>
+                <dt>blackNotesColour:</dt>
                 <dd>The colour of the black "accidental" keys</dd>
 
                 <dt>hoverColour:</dt>
@@ -86,7 +85,6 @@ keyboard.keyUp(function (note, frequency) {
         <script src="../qwerty-hancock.js"></script>
         <script>
             $(function () {
-                // function (id, width, height, octaves, startNote, whiteNotesColour, blackNotesColour, hoverColour) 
                 var settings = {
                     id: 'keyboard',
                     width: 600,
