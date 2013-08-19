@@ -15,6 +15,9 @@
     "piano"
   ],
   "license": "MIT",
+  "dependencies": {
+    "raphael": "2.1.x"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
