@@ -215,9 +215,9 @@
         }
 
         var keyboardDown = function (key) {
-           if (key.keyCode in keysDown) {
+            if (key.keyCode in keysDown) {
                return;
-           }
+            }
 
            keysDown[key.keyCode] = true;
 
