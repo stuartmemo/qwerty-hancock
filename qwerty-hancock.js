@@ -131,8 +131,10 @@
         };
 
         var mouseOut = function () {
-            darkenDown.call(this);
-            qh.keyUp(this.title, getFrequency(this.title));
+            if(mouse_is_down) {
+                darkenDown.call(this);
+                qh.keyUp(this.title, getFrequency(this.title));
+            }
         };
 
         var addListeners = function (li) {
