@@ -1,7 +1,7 @@
 /*
  * Qwerty Hancock keyboard library v0.3
  * Copyright 2012-13, Stuart Memo
- * 
+ *
  * Licensed under the MIT License
  * http://opensource.org/licenses/mit-license.php
  *
@@ -14,10 +14,9 @@
         var qh = {};
 
         qh.version = '0.3';
-        qh.id = settings.id || 'keyboard';
-        qh.octaves = settings.octaves || 3;
 
         var id = settings.id || 'keyboard',
+            element = settings.element || document.getElementById(id),
             number_of_octaves = settings.octaves || 3,
             total_white_keys = number_of_octaves * 7,
             keyboard_width = settings.width || 600,
@@ -33,7 +32,7 @@
             black_key_height = settings.blackKeyHeight || keyboard_height / 1.5,
             keyboardLayout = settings.keyboardLayout || "en",
             notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
-            notes_with_sharps = ['A', 'C', 'D', 'F', 'G'], 
+            notes_with_sharps = ['A', 'C', 'D', 'F', 'G'],
             total_black_keys = notes_with_sharps.length * number_of_octaves,
             first_note = start_note.charAt(0),
             octave_counter = 0,
@@ -58,7 +57,7 @@
          * Get frequency of given note.
          *
          * @method getFrequency
-         * @param note 
+         * @param note
          */
         var getFrequency = function (note) {
             var notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
@@ -74,9 +73,9 @@
             key_number = notes.indexOf(note.slice(0, -1));
 
             if (key_number < 3) {
-                key_number = key_number + 12 + ((octave - 1) * 12) + 1; 
+                key_number = key_number + 12 + ((octave - 1) * 12) + 1;
             } else {
-                key_number = key_number + ((octave - 1) * 12) + 1; 
+                key_number = key_number + ((octave - 1) * 12) + 1;
             }
 
             return 440 * Math.pow(2, (key_number - 49) / 12);
@@ -147,11 +146,9 @@
          * Draw keyboard in element.
          *
          * @method drawKeyboard
-         * @param id Id of element to add keyboard to.
          */
         var drawKeyboard = function () {
-            var el = document.getElementById(qh.id),
-                ul = document.createElement('ul'),
+            var ul = document.createElement('ul'),
                 note_counter = 0,
                 bizarre_note_counter = 0;
 
@@ -220,7 +217,7 @@
 
                     for (var j = 0; j < total_black_keys; j++) {
 
-                        if (new_notes[note_counter] === notes_with_sharps[j]) { 
+                        if (new_notes[note_counter] === notes_with_sharps[j]) {
 
                             bizarre_note_counter = new_notes[note_counter] + '#';
 
@@ -259,13 +256,13 @@
             drawBlackKeys();
 
             // Reset div height.
-            el.style.fontSize = '0px';
+            element.style.fontSize = '0px';
 
             // Insert list of notes into container element.
-            el.appendChild(ul);
+            element.appendChild(ul);
         };
 
-        drawKeyboard(id);
+        drawKeyboard();
 
         if (keyboardLayout == "en") {
             var keyToKey = {
