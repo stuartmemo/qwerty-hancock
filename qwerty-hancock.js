@@ -145,7 +145,6 @@
          * Draw keyboard in element.
          *
          * @method drawKeyboard
-         * @param id Id of element to add keyboard to.
          */
         var drawKeyboard = function () {
             var el = document.getElementById(id),
@@ -263,7 +262,7 @@
             el.appendChild(ul);
         };
 
-        drawKeyboard(id);
+        drawKeyboard();
 
         if (keyboardLayout == "en") {
             var keyToKey = {
