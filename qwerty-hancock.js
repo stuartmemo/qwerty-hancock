@@ -16,6 +16,7 @@
         qh.version = '0.3';
 
         var id = settings.id || 'keyboard',
+            element = settings.element || document.getElementById(id),
             number_of_octaves = settings.octaves || 3,
             total_white_keys = number_of_octaves * 7,
             keyboard_width = settings.width || 600,
@@ -147,8 +148,7 @@
          * @method drawKeyboard
          */
         var drawKeyboard = function () {
-            var el = document.getElementById(id),
-                ul = document.createElement('ul'),
+            var ul = document.createElement('ul'),
                 note_counter = 0,
                 bizarre_note_counter = 0;
 
@@ -256,10 +256,10 @@
             drawBlackKeys();
 
             // Reset div height.
-            el.style.fontSize = '0px';
+            element.style.fontSize = '0px';
 
             // Insert list of notes into container element.
-            el.appendChild(ul);
+            element.appendChild(ul);
         };
 
         drawKeyboard();
