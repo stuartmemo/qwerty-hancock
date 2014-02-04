@@ -3,7 +3,7 @@
     "name": "qwerty-hancock",
     "title": "Qwerty Hancock",
     "description": "An interactive HTML plugin-free keyboard for your web audio project.",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "dependencies": {},
     "devDependencies": {
         "grunt": "latest",
