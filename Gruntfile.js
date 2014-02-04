@@ -11,7 +11,7 @@ module.exports = function (grunt) {
                     'qwerty-hancock.min.js': 'qwerty-hancock.js'
                 },
                 options: {
-                    banner: '/* <%= pkg.title %> <%= pkg.version %> (c) 2013 Stuart Memo */\n'
+                    banner: '/* <%= pkg.title %> <%= pkg.version %> (c) 2013-14 Stuart Memo */\n'
                 }
             }
         }
