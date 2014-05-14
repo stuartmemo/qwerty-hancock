@@ -43,7 +43,30 @@
             new_notes = [],
             mouse_is_down = false,
             i = 0,
-            settings = {};
+            settings = {},
+            is_touch_device = 'ontouchstart' in document.documentElement,
+            midi_input,
+            midi_notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+        var midiSuccess = function (access) {
+            midi_input = (access.inputs())[0];
+            midi_input.onmidimessage = function (event) {
+                var data = event.data;
+                var key_pressed = midi_notes[data[1] % 12] + parseInt(data[1] / 12);
+
+                if (data[0] == 0x90) {
+                    qh.keyDown(key_pressed, getFrequency(key_pressed));
+                    if (el = document.getElementById(key_pressed)) lightenUp.call(el);
+                } else if (data[0] == 0x80) {
+                    qh.keyUp(key_pressed, getFrequency(key_pressed));
+                    if (el = document.getElementById(key_pressed)) darkenDown.call(el);
+                }
+            };
+        };
+
+        var midiError = function(err) {
+            console.info("Midi access restricted(maybe you forgot to enable it in chrome://flags): " + err.code);
+        };
 
         qh.keyDown = function () {
             // Placeholder function.
@@ -138,10 +161,17 @@
         };
 
         var addListeners = function (li) {
-            li.addEventListener('mousedown', mouseDown);
-            li.addEventListener('mouseup', mouseUp);
-            li.addEventListener('mouseover', mouseOver);
-            li.addEventListener('mouseout', mouseOut);
+            if (is_touch_device) {
+                li.addEventListener('touchstart', mouseDown);
+                li.addEventListener('touchend', mouseUp);
+                li.addEventListener('touchleave', mouseUp);
+                li.addEventListener('touchcancel', mouseUp);
+            } else {
+                li.addEventListener('mousedown', mouseDown);
+                li.addEventListener('mouseup', mouseUp);
+                li.addEventListener('mouseover', mouseOver);
+                li.addEventListener('mouseout', mouseOut);
+            }
         };
 
         /*
@@ -348,7 +378,9 @@
                 darkenDown.call(el);
             }
         };
-
+       
+       if (navigator.requestMIDIAccess) navigator.requestMIDIAccess().then(midiSuccess, midiError);
+       
        window.onkeydown = keyboardDown;
        window.onkeyup = keyboardUp;
 
