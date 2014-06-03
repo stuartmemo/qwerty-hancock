@@ -1,12 +1,13 @@
 {
-    "author": "Stuart Memo",
-    "name": "qwerty-hancock",
-    "title": "Qwerty Hancock",
-    "description": "An interactive HTML plugin-free keyboard for your web audio project.",
-    "version": "0.3.0",
-    "dependencies": {},
-    "devDependencies": {
-        "grunt": "latest",
-        "grunt-contrib-uglify": "latest"
-    }
+  "author": "Stuart Memo",
+  "name": "qwerty-hancock",
+  "title": "Qwerty Hancock",
+  "description": "An interactive HTML plugin-free keyboard for your web audio project.",
+  "version": "0.3.0",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-requirejs": "~0.4.2"
+  }
 }
