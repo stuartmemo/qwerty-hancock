@@ -11,8 +11,6 @@
 (function (window, undefined) {
     var version = '0.3',
         settings = {},
-        notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
-        new_notes = [],
         mouse_is_down = false,
         start_octave = 3,
         keysDown = {},
@@ -42,6 +40,22 @@
         };
 
     /**
+     * Calculate width of white key.
+     * @return {number} Width of a single white key in pixels.
+     */
+    var getWhiteKeyWidth = function (number_of_white_keys) {
+        return Math.floor((settings.width - number_of_white_keys) / number_of_white_keys);
+    };
+
+    /**
+     * Calculate width of black key.
+     * @return {number} Width of a single black key in pixels.
+     */
+    var getBlackKeyWidth = function () {
+        return 0;
+    };
+
+    /**
      * Merge user settings with defaults.
      * @param  {object} user_settings
      */
@@ -59,18 +73,7 @@
         };
 
         start_octave = parseInt(settings.startNote.charAt(1), 10);
-        total_white_keys = settings.octaves * 7;
         qwerty_octave = start_octave;
-    };
-
-    /**
-     * Calculate width of white key.
-     * @param  {number} keyboard_width Width of whole keyboard.
-     * @param  {number} number_of_white_keys Total number of white keys on keyboard.
-     * @return {number} Width of a single white key in pixels.
-     */
-    var calculateWhiteKeyWidth = function (keyboard_width, number_of_white_keys) {
-        return Math.floor((keyboard_width - number_of_white_keys) / number_of_white_keys);
     };
 
     /**
@@ -120,30 +123,99 @@
         }
     };
 
+    /**
+     * Order notes into order defined by starting key in settings.
+     * @param {array} notes_to_order Notes to be ordered.
+     * @return {array{ ordered_notes Ordered notes.
+     */
+    var orderNotes = function (notes_to_order) {
+        var i = 0,
+            keyOffset = 0,
+            ordered_notes = [],
+            number_of_notes_to_order = notes_to_order.length;
 
-
-    var defineScale = function () {
-        var i = 0;
-
-        for (i = 0; i < 7; i++) {
-            if (settings.startNote.charAt(0) === notes[i]) {
+        for (i = 0; i < number_of_notes_to_order; i++) {
+            if (settings.startNote.charAt(0) === notes_to_order[i]) {
                 keyOffset = i;
                 break;
             }
         }
 
-        for (i = 0; i < 7; i++) {
-            if (i + keyOffset > 6) {
-                new_notes[i] = notes[i + keyOffset -7];
+        for (i = 0; i < number_of_notes_to_order; i++) {
+            if (i + keyOffset > number_of_notes_to_order - 1) {
+                ordered_notes[i] = notes_to_order[i + keyOffset - number_of_notes_to_order];
             } else {
-                new_notes[i] = notes[i + keyOffset];
+                ordered_notes[i] = notes_to_order[i + keyOffset];
             }
+        }
+
+        return ordered_notes;
+    };
+
+    /**
+     * Add styling to individual white key.
+     * @param  {element} el White key DOM element.
+     */
+    var styleWhiteKey = function (key) {
+        key.el.style.backgroundColor = settings.whiteKeyColour;
+        key.el.style.border = '1px solid black';
+        key.el.style.borderRight = 0;
+        key.el.style.height = settings.height + 'px';
+        key.el.style.width = key.width + 'px';
+    };
+
+    /**
+     * Add styling to individual black key.
+     * @param  {element} el Black key DOM element.
+     */
+    var styleBlackKey = function (key) {
+        var black_key_width = Math.floor(white_key_width / 2),
+            octave_width = 7 * (white_key_width + 1);
+            octave_offset = (key.octave - start_octave) * octave_width,
+            start_position = ((white_key_width + key.index + 1) - (black_key_width / 2));
+
+        key.el.style.backgroundColor = settings.blackKeyColour;
+        key.el.style.border = 0;
+        key.el.style.position = 'absolute';
+        key.el.style.left = Math.floor(start_position + (key.index * white_key_width)) + 'px';
+        key.el.style.width = black_key_width + 'px';
+        key.el.style.height = (settings.height / 1.5) + 'px';
+    };
+
+    /**
+    * Add styling to individual key on keyboard.
+    * @param  {object} key Element of key.
+    */
+    var styleKey = function (key) {
+        key.el.style.display = 'inline-block';
+        key.el.style['-webkit-user-select'] = 'none';
+
+        if (key.colour === 'white') {
+            styleWhiteKey(key);
+        } else {
+            styleBlackKey(key);
         }
     };
 
     /**
-     * Call user's mouseDown event.
-     */
+    * Reset styles on keyboard container element.
+    * @param {element} keyboard Keyboard container DOM element.
+    */
+    var styleKeyboard = function (keyboard) {
+        keyboard.el.style.cursor = 'default';
+        keyboard.el.style.fontSize = '0px';
+        keyboard.el.style.height = settings.height + 'px';
+        keyboard.el.style.padding = 0;
+        keyboard.el.style.position = 'relative';
+        keyboard.el.style.listStyle = 'none';
+        keyboard.el.style.margin = 0;
+        keyboard.el.style.width = settings.width + 'px';
+        keyboard.el.style['-webkit-user-select'] = 'none';
+    };
+
+    /**
+    * Call user's mouseDown event.
+    */
     var mouseDown = function () {
         mouse_is_down = true;
         lightenUp.call(this);
@@ -151,8 +223,8 @@
     };
 
     /**
-     * Call user's mouseUp event.
-     */
+    * Call user's mouseUp event.
+    */
     var mouseUp = function () {
         mouse_is_down = false;
         darkenDown.call(this);
@@ -160,8 +232,8 @@
     };
 
     /**
-     * Call user's mouseDown if required.
-     */
+    * Call user's mouseDown if required.
+    */
     var mouseOver = function () {
         if (mouse_is_down) {
             lightenUp.call(this);
@@ -170,20 +242,20 @@
     };
 
     /**
-     * Call user's mouseUp if required.
-     */
+    * Call user's mouseUp if required.
+    */
     var mouseOut = function () {
         if (mouse_is_down) {
             darkenDown.call(this);
             this.keyUp(this.title, getFrequencyOfNote(this.title));
         }
     };
-
+ 
     /**
-     * Add click/touch event listeners.
-     * @param {object} el The element to add the event listeners to.
-     */
-    var addListeners = function (key) {
+    * Add click/touch event listeners.
+    * @param {object} el The element to add the event listeners to.
+    */
+    var addListenersToKey = function (key) {
         if ('ontouchstart' in document.documentElement) {
             key.el.addEventListener('touchstart', mouseDown);
             key.el.addEventListener('touchend', mouseUp);
@@ -196,192 +268,136 @@
             key.el.addEventListener('mouseout', mouseOut);
         }
     };
-            
-    /**
-     * Add styling to individual white key.
-     * @param  {element} el White key DOM element.
-     */
-    var styleWhiteKey = function (key) {
-        key.el.style.backgroundColor = settings.whiteKeyColour;
-        key.el.style.height = settings.height + 'px';
-        key.el.style.width = white_key_width + 'px';
-        key.el.style.borderRight = 0;
-    };
 
     /**
-     * Add styling to individual black key.
-     * @param  {element} el Black key DOM element.
-     */
-    var styleBlackKey = function (key) {
-        var black_key_width = Math.floor(white_key_width / 2),
-            start_position = (white_key_width + 1) - (black_key_width / 2);
+    * Create key DOM element.
+    * @return {object} Key DOM element.
+    */
+    var createKey = function (key) {
+        key.el = document.createElement('li');
+        key.el.setAttribute('data-note-type', key.colour);
 
-        key.el.style.backgroundColor = settings.blackKeyColour;
-        key.el.style.position = 'absolute';
-        key.el.style.left = Math.floor(start_position + key.index) + 'px';
-        key.el.style.width = black_key_width + 'px';
-        key.el.style.height = (settings.height / 1.5) + 'px';
+        styleKey(key);
+        addListenersToKey(key);
+
+        return key;
     };
 
-    var createKeyboard = function () {
-        var keyboard = document.createElement('ul');
+    var createWhiteKeys = function (notes) {
+        var note_counter = 0,
+            octave_counter = start_octave,
+            key,
+            keys = [],
+            total_white_keys = settings.octaves * 7;
 
-        /**
-        * Reset styles on keyboard container element.
-        * @param {element} keyboard Keyboard container DOM element.
-        */
-        var resetKeyboardStyle = function (keyboard) {
-            keyboard.style.cursor = 'default';
-            keyboard.style.fontSize = '0px';
-            keyboard.style.height = settings.height + 'px';
-            keyboard.style.padding = 0;
-            keyboard.style.position = 'relative';
-            keyboard.style.listStyle = 'none';
-            keyboard.style.margin = 0;
-            keyboard.style.width = settings.width + 'px';
-            keyboard.style['-webkit-user-select'] = 'none';
-        };
-
-        /**
-        * Add styling to individual key on keyboard.
-        * @param  {object} key Element of key.
-        */
-        var styleKey = function (key) {
-            key.el.style.display = 'inline-block';
-            key.el.style.border = '1px solid black';
-            key.el.style['-webkit-user-select'] = 'none';
-
-            if (key.colour === 'white') {
-                styleWhiteKey(key);
-            } else {
-                styleBlackKey(key);
+        for (var i = 0; i < total_white_keys; i++) {
+            if (i % notes.length === 0) {
+                note_counter = 0;
             }
-        };
 
-        /**
-        * Create key DOM element.
-        * @return {object} Key DOM element.
-        */
-        var createKey = function (colour, key_index) {
-            var key = {};
+            bizarre_note_counter = this.whiteNotes[note_counter];
 
-            key.colour = colour;
-            key.index = key_index; 
-            key.el = document.createElement('li');
-            key.el.setAttribute('data-note-type', key.colour);
+            if (bizarre_note_counter === 'C') {
+                octave_counter++;
+            }
 
-            styleKey(key);
-            addListeners(key);
-
-            return key;
-        };
-
-        var addKeysToKeyboard = function (keyboard, keys) {
-            keys.forEach(function (key) {
-                keyboard.appendChild(key);
+            key = createKey({
+                colour: 'white',
+                octave: octave_counter,
+                width: getWhiteKeyWidth(total_white_keys)
             });
-        };
-        
-        var createWhiteKeys = function () {
-            var note_counter = 0,
-                octave_counter = start_octave,
-                key,
-                keys = [];
 
-            for (var i = 0; i < total_white_keys; i++) {
-                if (i % notes.length === 0) {
-                    note_counter = 0;
-                }
+            key.el.id = notes[note_counter] + octave_counter;
+            key.el.title = notes[note_counter] + octave_counter;
 
-                bizarre_note_counter = new_notes[note_counter];
+            keys.push(key.el);
 
-                key = createKey('white', note_counter * octave_counter);
-                key.el.id = new_notes[note_counter] + octave_counter;
-                key.el.title = new_notes[note_counter] + octave_counter;
+            note_counter++;
+        }
+
+        return keys;
+    };
+
+    var createBlackKeys = function (notes) {
+        var note_counter = 0,
+            octave_counter = start_octave,
+            total_white_keys = settings.octaves * 7,
+            total_black_keys = notes.length * settings.octaves,
+            white_key_width = getWhiteKeyWidth(total_white_keys),
+            key,
+            keys = [],
+            i = 0;
+
+        for (i = 0; i < total_black_keys; i++) {
+            bizarre_note_counter = notes[note_counter] + '#';
+
+            if (bizarre_note_counter === 'C#') {
+                octave_counter++;
+            }
+
+            // Don't draw last black note
+            if ((white_key_width + i) * (i + 1) < settings.width - white_key_width) {
+
+                key = createKey({
+                    colour: 'black',
+                    index: note_counter,
+                    octave: octave_counter
+                });
+
+                key.el.id = notes[note_counter] + '#' + octave_counter;
+                key.el.title = notes[note_counter] + '#' + octave_counter;
+                key.octave_counter = j;
+                key.octave = octave_counter;
+                key.offset = octave_counter - start_octave;
 
                 keys.push(key.el);
-
-                if (bizarre_note_counter === 'B') {
-                    octave_counter++;
-                }
-
-                note_counter++;
             }
+        }
 
-            return keys;
-        };
-
-        var createBlackKeys = function () {
-            var note_counter = 0,
-                octave_counter = start_octave,
-                notes_with_sharps = ['A', 'C', 'D', 'F', 'G'],
-                total_black_keys = notes_with_sharps.length * settings.octaves,
-                key,
-                keys = [];
-
-            for (i = 0; i < total_white_keys; i++) {
-
-                if (i % notes.length === 0) {
-                    note_counter = 0;
-                }
-
-                for (var j = 0; j < total_black_keys; j++) {
-                    if (new_notes[note_counter] === notes_with_sharps[j]) {
-
-                        bizarre_note_counter = new_notes[note_counter] + '#';
-
-                        // Don't draw last black note
-                        if ((white_key_width + i) * (i + 1) < settings.width - white_key_width) {
-
-                            key = createKey('black', note_counter + octave_counter);
-                            key.el.id = new_notes[note_counter] + '#' + octave_counter;
-                            key.el.title = new_notes[note_counter] + '#' + octave_counter;
-                            key.index = j;
-                            key.offset = octave_counter - start_octave;
-
-                            keys.push(key.el);
-                            
-                            if (bizarre_note_counter === 'C#') {
-                                octave_counter++;
-                            }
-                        }
-                    }
-                }
-
-                note_counter++;
-            }
-
-            return keys;
-        };
+        return keys;
     };
 
+    var addKeysToKeyboard = function (keyboard) {
+        keyboard.keys.forEach(function (key) {
+            keyboard.el.appendChild(key);
+        });
+    };
+    
     var addKeyboardToContainer = function (keyboard) {
         document.getElementById(settings.id).appendChild(keyboard);
     };
 
-    /**
-     * Draw keyboard in element.
-     * @method drawKeyboard
-     */
-    var drawKeyboard = function () {
-        var note_counter = 0,
-            bizarre_note_counter = 0,
-            key_map = {};
-
-        white_key_width = calculateWhiteKeyWidth(settings.width, total_white_keys);
-
-        this.el = document.getElementById(settings.id);
-        defineScale();
-
-        keyboard.style.height = (settings.height + 2) + 'px';
-
-        // Insert list of notes into container element.
-        addKeysToKeyboard(keyboard, createWhiteKeys().concat(createBlackKeys()));
-        addKeyboardToContainer(keyboard);
+    var createKeys = function () {
+        var ordered_white_notes = orderNotes(['C', 'D', 'E', 'F', 'G', 'A', 'B']),
+            ordered_black_notes = orderNotes(['C#', 'D#', 'F#', 'G#', 'A#']),
+            white_keys = createWhiteKeys.call(this, ordered_white_notes),
+            black_keys = createBlackKeys(ordered_black_notes);
+            //keys = white_keys.concat(black_keys);
+ 
+        return white_keys;
     };
 
-    var getKeyPressed = function () {
-        return key_map[key.keyCode]
+    var createKeyboard = function () {
+        var keyboard = {
+            container: document.getElementById(settings.id),
+            el: document.createElement('ul'),
+            whiteNotes: orderNotes(['C', 'D', 'E', 'F', 'G', 'A', 'B']),
+            blackNotes: orderNotes(['C#', 'D#', 'F#', 'G#', 'A#'])
+        };
+
+        keyboard.keys = createKeys.call(keyboard);
+        styleKeyboard(keyboard);
+
+        // Add keys to keyboard, and keyboard to container.
+        addKeysToKeyboard(keyboard);
+
+        keyboard.container.appendChild(keyboard.el);
+
+        return keyboard;
+    };
+
+    var getKeyPressed = function (keyCode) {
+        return key_map[keyCode]
                 .replace('l', qwerty_octave)
                 .replace('u', (parseInt(qwerty_octave, 10) + 1)
                 .toString());
@@ -401,7 +417,7 @@
        keysDown[key.keyCode] = true;
 
        if (typeof key_map[key.keyCode] !== 'undefined') {
-            key_pressed = getKeyPressed();
+            key_pressed = getKeyPressed(key.keyCode);
             this.keyDown(key_pressed, getFrequencyOfNote(key_pressed));
             lightenUp.call(document.getElementById(key_pressed));
        }
@@ -418,7 +434,7 @@
         delete keysDown[key.keyCode];
 
         if (typeof key_map[key.keyCode] !== 'undefined') {
-            key_pressed = getKeyPressed();
+            key_pressed = getKeyPressed(key.keyCode);
             this.keyUp(key_pressed, getFrequencyOfNote(key_pressed));
             darkenDown.call(document.getElementById(key_pressed));
         }
@@ -432,9 +448,8 @@
         init(settings);
 
         this.version = version;
-        this.el = document.getElementById(settings.id);
 
-        drawKeyboard();
+        createKeyboard();
 
         this.keyDown = function () {
             // Placeholder function.

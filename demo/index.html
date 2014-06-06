@@ -5,7 +5,7 @@
         <title>Qwerty Hancock &mdash; vector JavaScript keyboard for web audio projects</title>
         <meta name="description" content="Qwerty Hancock is a vector JavaScript keyboard for your web audio project." />
         <meta name="author" content="Stuart Memo" />
-        <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>
+        <!--<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>-->
         <link rel="stylesheet" href="style.css"/>
     </head>
     <body>
@@ -79,7 +79,7 @@ keyboard.keyUp = function (note, frequency) {
             <footer>Copyright 2012-13 <a href="http://stuartmemo.com">Stuart Memo</a>.<br/>
             Released under MIT licence.</footer>
         </div>
-        <script src="../qwerty-hancock.js"></script>
+        <script src="../src/qwerty-hancock.js"></script>
         <script>
             var context,
                 settings = {
@@ -132,6 +132,7 @@ keyboard.keyUp = function (note, frequency) {
                 nodes = new_nodes;
             };
 
+            /**
             // Analytics
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-32368229-1']);
@@ -142,6 +143,7 @@ keyboard.keyUp = function (note, frequency) {
                 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
                 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
             })();
+            **/
         </script>
     </body>
 </html>
