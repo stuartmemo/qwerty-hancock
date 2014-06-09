@@ -1,5 +1,5 @@
 /*
- * Qwerty Hancock keyboard library v0.3
+ * Qwerty Hancock keyboard library v0.4
  * Copyright 2012-14, Stuart Memo
  *
  * Licensed under the MIT License
@@ -9,7 +9,7 @@
  */
 
 (function (window, undefined) {
-    var version = '0.3',
+    var version = '0.4',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
@@ -63,11 +63,15 @@
             blackKeyColour: user_settings.blackKeyColour || '#000',
             activeColour:   user_settings.activeColour || 'yellow',
             borderColour:   user_settings.borderColour || '#000',
-            keyboardLayout: user_settings.keyboardLayout || 'en',
+            keyboardLayout: user_settings.keyboardLayout || 'en'
         };
 
         settings.startOctave = parseInt(settings.startNote.charAt(1), 10);
+
         createKeyboard();
+
+        console.log(this);
+        addListeners.call(this, document.getElementById(settings.id));
     };
 
     /**
@@ -252,12 +256,6 @@
     * @param {object} el The element to add the event listeners to.
     */
     var addListenersToKey = function (key) {
-        if ('ontouchstart' in document.documentElement) {
-            key.el.addEventListener('touchstart', mouseDown);
-            key.el.addEventListener('touchend', mouseUp);
-            key.el.addEventListener('touchleave', mouseUp);
-            key.el.addEventListener('touchcancel', mouseUp);
-        } 
     };
 
     /**
@@ -405,42 +403,68 @@
     };
 
     /**
-     * Qwerty Hancock constructor.
-     * @param {object} settings Optional user settings.
+     * Add event listeners to keyboard.
+     * @param {element} keyboard_element
      */
-    var QwertyHancock = function (settings) {
-        var that = this,
-            keyboard_element;
+    var addListeners = function (keyboard_element) {
+        var that = this;
 
-        this.version = version;
-        init(settings);
-
-        keyboard_element = document.getElementById(settings.id);
-
+        // Key is pressed down on keyboard.
         window.addEventListener('keydown', function (key) {
             keyboardDown(key, that.keyDown);
         });
  
+        // Key is released on keyboard.
         window.addEventListener('keyup', function (key) {
             keyboardUp(key, that.keyUp);
         });
 
+        // Mouse is clicked down on keyboard element.
         keyboard_element.addEventListener('mousedown', function (event) {
             mouseDown(event.target, that.keyDown);
         });
 
+        // Mouse is released from keyboard element.
         keyboard_element.addEventListener('mouseup', function (event) {
             mouseUp(event.target, that.keyUp);
         });
 
+        // Mouse is moved over keyboard element.
         keyboard_element.addEventListener('mouseover', function (event) {
             mouseOver(event.target, that.keyDown);
         });
 
+        // Mouse is moved out of keyvoard element.
         keyboard_element.addEventListener('mouseout', function (event) {
             mouseOut(event.target, that.keyUp);
         });
 
+        // Device supports touch events.
+        if ('ontouchstart' in document.documentElement) {
+            keyboard_element.addEventListener('touchstart', function (event) {
+                mouseDown(event.target, that.keyDown);
+            });
+
+            keyboard_element.addEventListener('touchend', function (event) {
+                mouseUp(event.target, that.keyUp);
+            });
+
+            keyboard_element.addEventListener('touchleave', function (event) {
+                mouseOut(event.target, that.keyUp);
+            });
+
+            keyboard_element.addEventListener('touchcancel', function (event) {
+                mouseOut(event.target, that.keyUp);
+            });
+        } 
+    };
+
+    /**
+     * Qwerty Hancock constructor.
+     * @param {object} settings Optional user settings.
+     */
+    var QwertyHancock = function (settings) {
+        this.version = version;
 
         this.keyDown = function () {
             // Placeholder function.
@@ -449,6 +473,8 @@
         this.keyUp = function () {
             // Placeholder function.
         };
+
+        init.call(this, settings);
     };
 
     window.QwertyHancock = QwertyHancock;
