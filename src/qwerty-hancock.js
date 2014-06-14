@@ -52,7 +52,9 @@
      * Merge user settings with defaults.
      * @param  {object} user_settings
      */
-    var init = function (user_settings) {
+    var init = function (us) {
+        user_settings = us || {};
+
         settings = {
             id:             user_settings.id || 'keyboard',
             octaves:        user_settings.octaves || 3,
@@ -67,7 +69,8 @@
         };
 
         settings.startOctave = parseInt(settings.startNote.charAt(1), 10);
-        createKeyboard();
+        createKeyboard(settings);
+        return settings;
     };
 
     /**
@@ -194,19 +197,24 @@
     };
 
     /**
-    * Reset styles on keyboard container element.
+    * Reset styles on keyboard container and list element.
     * @param {element} keyboard Keyboard container DOM element.
     */
     var styleKeyboard = function (keyboard) {
-        keyboard.el.style.cursor = 'default';
-        keyboard.el.style.fontSize = '0px';
-        keyboard.el.style.height = settings.height + 'px';
-        keyboard.el.style.padding = 0;
-        keyboard.el.style.position = 'relative';
-        keyboard.el.style.listStyle = 'none';
-        keyboard.el.style.margin = 0;
-        keyboard.el.style.width = settings.width + 'px';
-        keyboard.el.style['-webkit-user-select'] = 'none';
+        var styleElement = function (el) {
+            el.style.cursor = 'default';
+            el.style.fontSize = '0px';
+            el.style.height = settings.height + 'px';
+            el.style.padding = 0;
+            el.style.position = 'relative';
+            el.style.listStyle = 'none';
+            el.style.margin = 0;
+            el.style.width = settings.width + 'px';
+            el.style['-webkit-user-select'] = 'none';
+        }
+
+        styleElement(keyboard.container);
+        styleElement(keyboard.el);
     };
 
     /**
@@ -413,7 +421,7 @@
             keyboard_element;
 
         this.version = version;
-        init(settings);
+        settings = init(settings);
 
         keyboard_element = document.getElementById(settings.id);
 
