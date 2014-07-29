@@ -1,7 +1,8 @@
-'use strict';
-
 describe('Qwerty Hancock tests', function () {
+    'use strict';
+
     var element;
+
 
     beforeEach(function () {
         element = document.createElement('div');
@@ -60,6 +61,15 @@ describe('Qwerty Hancock tests', function () {
         for (var i = 0; i < black_keys.length; i++) {
             expect(black_keys[i].style.backgroundColor).toBe('red');
         }
+    });
+
+    it('When user presses key on computer keyboard, related keyboard key should change colour', function () {
+        var qh = new QwertyHancock(),
+            c4_key = document.querySelector('#C4');
+
+        pressKey(75);
+
+        expect(c4_key.style.backgroundColor).toBe('yellow');
     });
 
     afterEach(function () {

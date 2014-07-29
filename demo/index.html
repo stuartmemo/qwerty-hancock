@@ -81,12 +81,12 @@ keyboard.keyUp = function (note, frequency) {
         </div>
         <script src="../src/qwerty-hancock.js"></script>
         <script>
-            var context,
+            var context = new AudioContext(),
                 settings = {
                     id: 'keyboard',
                     width: 600,
                     height: 150,
-                    startNote: 'A3',
+                    startNote: 'C3',
                     whiteNotesColour: '#fff',
                     blackNotesColour: '#000',
                     borderColour: '#000',
@@ -94,12 +94,6 @@ keyboard.keyUp = function (note, frequency) {
                     octaves: 2
                 },
                 keyboard = new QwertyHancock(settings);
-
-            if (typeof AudioContext === 'function') {
-                context = new AudioContext();
-            } else {
-                context = new webkitAudioContext();
-            }
 
             masterGain = context.createGain();
             nodes = [];

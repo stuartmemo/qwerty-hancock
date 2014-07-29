@@ -15,6 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+        'lib/key-simulator.js',
         'src/qwerty-hancock.js',
         'tests/*.js'      
     ],
@@ -58,11 +59,11 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox', 'ChromeCanary', 'Safari', 'PhantomJS', 'Opera'],
+    browsers: ['Chrome', 'Firefox', 'ChromeCanary'],
 
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    singleRun: true
   });
 };

@@ -23,6 +23,7 @@
             84: 'F#l',
             71: 'Gl',
             89: 'G#l',
+            90: 'G#l',
             72: 'Al',
             85: 'A#l',
             74: 'Bl',
@@ -34,8 +35,7 @@
             186: 'Eu',
             222: 'Fu',
             221: 'F#u',
-            220: 'Gu',
-            90: 'G#l'
+            220: 'Gu'
         },
         keyDownCallback,
         keyUpCallback;
@@ -69,16 +69,9 @@
         };
 
         settings.startOctave = parseInt(settings.startNote.charAt(1), 10);
-<<<<<<< HEAD
-        createKeyboard(settings);
-        return settings;
-=======
 
         createKeyboard();
-
-        console.log(this);
         addListeners.call(this, document.getElementById(settings.id));
->>>>>>> 9551e86b847b88cc1c3db5a7b4556594c6c8a8f1
     };
 
     /**
@@ -109,7 +102,7 @@
     };
 
     /**
-     * Change colour of key.
+     * Lighten up man. Change the colour of a key.
      * @param  {element} el DOM element to change colour of.
      */
     var lightenUp = function lightenUp (el) {
@@ -264,13 +257,6 @@
     };
  
     /**
-    * Add click/touch event listeners.
-    * @param {object} el The element to add the event listeners to.
-    */
-    var addListenersToKey = function (key) {
-    };
-
-    /**
     * Create key DOM element.
     * @return {object} Key DOM element.
     */
@@ -281,7 +267,6 @@
         key.el.setAttribute('data-note-type', key.colour);
 
         styleKey(key);
-        addListenersToKey(key);
 
         return key;
     };
@@ -292,13 +277,14 @@
 
     var createKeys = function () {
         var that = this,
-            note_counter = 0,
-            octave_counter = settings.startOctave,
+            i,
             key,
             keys = [],
+            note_counter = 0,
+            octave_counter = settings.startOctave,
             total_white_keys = getTotalWhiteKeys();
 
-        for (var i = 0; i < total_white_keys; i++) {
+        for (i = 0; i < total_white_keys; i++) {
 
             if (i % this.whiteNotes.length === 0) {
                 note_counter = 0;
@@ -368,8 +354,8 @@
 
     var getKeyPressed = function (keyCode) {
         return key_map[keyCode]
-                .replace('l', settings.startOctave)
-                .replace('u', (parseInt(settings.startOctave, 10) + 1)
+                .replace('l', parseInt(settings.startOctave, 10) + 1)
+                .replace('u', (parseInt(settings.startOctave, 10) + 2)
                 .toString());
     };
 
@@ -418,19 +404,8 @@
      * Add event listeners to keyboard.
      * @param {element} keyboard_element
      */
-<<<<<<< HEAD
-    var QwertyHancock = function (settings) {
-        var that = this,
-            keyboard_element;
-
-        this.version = version;
-        settings = init(settings);
-
-        keyboard_element = document.getElementById(settings.id);
-=======
     var addListeners = function (keyboard_element) {
         var that = this;
->>>>>>> 9551e86b847b88cc1c3db5a7b4556594c6c8a8f1
 
         // Key is pressed down on keyboard.
         window.addEventListener('keydown', function (key) {
