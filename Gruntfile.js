@@ -30,5 +30,5 @@ module.exports = function (grunt) {
 
     // Tasks.
     grunt.registerTask('default', ['uglify']);
-    grunt.registerTask('tests', ['karma']);
+    grunt.registerTask('test', ['karma']);
 };

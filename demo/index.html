@@ -10,7 +10,7 @@
     </head>
     <body>
         <div class="container">
-            <img class="the-hancock" src="qwerty-hancock.png"/>
+            <img class="the-hancock" alt="Qwerty Hancock playing the keyboard." src="qwerty-hancock.png"/>
             <h1>Qwerty Hancock</h1>
             <p>Need an interactive HTML plugin-free keyboard for your web audio project? Qwerty Hancock is just the thing.</p>
             <p>Specify the number of octaves, give it a height and a width then you're ready to use your mouse or keyboard to have the time of your life.</p>
@@ -81,12 +81,14 @@ keyboard.keyUp = function (note, frequency) {
         </div>
         <script src="../src/qwerty-hancock.js"></script>
         <script>
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
             var context = new AudioContext(),
                 settings = {
                     id: 'keyboard',
                     width: 600,
                     height: 150,
-                    startNote: 'C3',
+                    startNote: 'A2',
                     whiteNotesColour: '#fff',
                     blackNotesColour: '#000',
                     borderColour: '#000',
@@ -126,7 +128,6 @@ keyboard.keyUp = function (note, frequency) {
                 nodes = new_nodes;
             };
 
-            /**
             // Analytics
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-32368229-1']);
@@ -137,7 +138,6 @@ keyboard.keyUp = function (note, frequency) {
                 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
                 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
             })();
-            **/
         </script>
     </body>
 </html>

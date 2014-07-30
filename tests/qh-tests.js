@@ -3,7 +3,6 @@ describe('Qwerty Hancock tests', function () {
 
     var element;
 
-
     beforeEach(function () {
         element = document.createElement('div');
         element.id = 'keyboard';
@@ -70,18 +69,11 @@ describe('Qwerty Hancock tests', function () {
         expect(first_white_key.id).toBe('C4');
     });
 
-    it('First key on keyboard should be natural of user defined note if sharp', function () {
-        var qh = new QwertyHancock({startNote: 'F#2'}),
-            first_white_key = element.querySelector('li[data-note-type="white"]');
-
-        expect(first_white_key.id).toBe('F2');
-    });
-
     it('When user presses key on computer keyboard, related keyboard key should change colour', function () {
         var qh = new QwertyHancock(),
             c4_key = document.querySelector('#C4');
 
-        pressKey(75);
+        pressKey(65);
 
         expect(c4_key.style.backgroundColor).toBe('yellow');
     });

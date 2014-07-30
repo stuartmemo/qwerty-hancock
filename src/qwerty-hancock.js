@@ -131,10 +131,10 @@
      * @return {array{ ordered_notes Ordered notes.
      */
     var orderNotes = function (notes_to_order) {
-        var i = 0,
+        var i,
             keyOffset = 0,
-            ordered_notes = [],
-            number_of_notes_to_order = notes_to_order.length;
+            number_of_notes_to_order = notes_to_order.length,
+            ordered_notes = [];
 
         for (i = 0; i < number_of_notes_to_order; i++) {
             if (settings.startNote.charAt(0) === notes_to_order[i]) {
@@ -164,7 +164,8 @@
         key.el.style.borderRight = 0;
         key.el.style.height = settings.height + 'px';
         key.el.style.width = key.width + 'px';
-    }
+        key.el.style.borderRadius = '0 0 5px 5px';
+    };
 
     /**
      * Add styling to individual black key.
@@ -180,6 +181,7 @@
         key.el.style.left = Math.floor(((white_key_width + 1) * (key.noteNumber + 1)) - (black_key_width / 2)) + 'px';
         key.el.style.width = black_key_width + 'px';
         key.el.style.height = (settings.height / 1.5) + 'px';
+        key.el.style.borderRadius = '0 0 3px 3px';
     };
 
     /**
@@ -212,7 +214,7 @@
             el.style.margin = 0;
             el.style.width = settings.width + 'px';
             el.style['-webkit-user-select'] = 'none';
-        }
+        };
 
         styleElement(keyboard.container);
         styleElement(keyboard.el);
@@ -292,7 +294,7 @@
 
             bizarre_note_counter = this.whiteNotes[note_counter];
 
-            if (bizarre_note_counter === 'C') {
+            if ((bizarre_note_counter === 'C') && (i !== 0)) {
                 octave_counter++;
             }
 
@@ -332,16 +334,22 @@
             keyboard.el.appendChild(key);
         });
     };
+
+    var setKeyPressOffset = function (sorted_white_notes) {
+        settings.keyPressOffset = sorted_white_notes[0] === 'C' ? 0 : 1;
+    };
     
     var createKeyboard = function () {
         var keyboard = {
             container: document.getElementById(settings.id),
             el: document.createElement('ul'),
             whiteNotes: orderNotes(['C', 'D', 'E', 'F', 'G', 'A', 'B']),
-            notesWithSharps: orderNotes(['C', 'D', 'F', 'G', 'A'])
+            notesWithSharps: orderNotes(['C', 'D', 'F', 'G', 'A']),
         };
 
         keyboard.keys = createKeys.call(keyboard);
+
+        setKeyPressOffset(keyboard.whiteNotes);
         styleKeyboard(keyboard);
 
         // Add keys to keyboard, and keyboard to container.
@@ -354,8 +362,8 @@
 
     var getKeyPressed = function (keyCode) {
         return key_map[keyCode]
-                .replace('l', parseInt(settings.startOctave, 10) + 1)
-                .replace('u', (parseInt(settings.startOctave, 10) + 2)
+                .replace('l', parseInt(settings.startOctave, 10) + settings.keyPressOffset)
+                .replace('u', (parseInt(settings.startOctave, 10) + settings.keyPressOffset + 1)
                 .toString());
     };
 
@@ -477,35 +485,3 @@
 
     window.QwertyHancock = QwertyHancock;
 })(window);
-
-/**
-var midiSuccess = function (access) {
-    var midi_input = access.inputs()[0];
-        midi_notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-
-    midi_input.onmidimessage = function (event) {
-        var data = event.data,
-            key_pressed = midi_notes[data[1] % 12] + parseInt(data[1] / 12, 10);
-
-        if (data[0] == 0x90) {
-            this.keyDown(key_pressed, getFrequencyOfNote(key_pressed));
-            if (el === document.getElementById(key_pressed)) {
-                lightenUp.call(el);
-            } 
-        } else if (data[0] == 0x80) {
-            this.keyUp(key_pressed, getFrequencyOfNote(key_pressed));
-            if (el === document.getElementById(key_pressed)) {
-                darkenDown.call(el);
-            }
-        }
-    };
-};
-
-var midiError = function (err) {
-    console.info('Midi not available:', err.code);
-};
-
-if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess().then(midiSuccess, midiError);
-}
-*/
