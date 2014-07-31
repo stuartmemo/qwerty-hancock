@@ -75,7 +75,7 @@ describe('Qwerty Hancock tests', function () {
 
         pressKey(65);
 
-        expect(c4_key.style.backgroundColor).toBe('pink');
+        expect(c4_key.style.backgroundColor).toBe('yellow');
     });
 
     afterEach(function () {
