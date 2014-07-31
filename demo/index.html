@@ -5,12 +5,12 @@
         <title>Qwerty Hancock &mdash; vector JavaScript keyboard for web audio projects</title>
         <meta name="description" content="Qwerty Hancock is a vector JavaScript keyboard for your web audio project." />
         <meta name="author" content="Stuart Memo" />
-        <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>
+        <!--<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>-->
         <link rel="stylesheet" href="style.css"/>
     </head>
     <body>
         <div class="container">
-            <img class="the-hancock" src="qwerty-hancock.png"/>
+            <img class="the-hancock" alt="Qwerty Hancock playing the keyboard." src="qwerty-hancock.png"/>
             <h1>Qwerty Hancock</h1>
             <p>Need an interactive HTML plugin-free keyboard for your web audio project? Qwerty Hancock is just the thing.</p>
             <p>Specify the number of octaves, give it a height and a width then you're ready to use your mouse or keyboard to have the time of your life.</p>
@@ -79,30 +79,26 @@ keyboard.keyUp = function (note, frequency) {
             <footer>Copyright 2012-13 <a href="http://stuartmemo.com">Stuart Memo</a>.<br/>
             Released under MIT licence.</footer>
         </div>
-        <script src="../qwerty-hancock.js"></script>
+        <script src="../src/qwerty-hancock.js"></script>
         <script>
-            var context,
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+            var context = new AudioContext(),
                 settings = {
                     id: 'keyboard',
                     width: 600,
                     height: 150,
-                    startNote: 'A3',
-                    whiteNotesColour: 'white',
-                    blackNotesColour: 'black',
-                    hoverColour: 'yellow',
+                    startNote: 'A2',
+                    whiteNotesColour: '#fff',
+                    blackNotesColour: '#000',
+                    borderColour: '#000',
+                    activeColour: 'yellow',
                     octaves: 2
                 },
                 keyboard = new QwertyHancock(settings);
 
-            if (typeof AudioContext === 'function') {
-                context = new AudioContext();
-            } else {
-                context = new webkitAudioContext();
-            }
-
-            masterGain = context.createGain(),
+            masterGain = context.createGain();
             nodes = [];
-
 
             masterGain.gain.value = 0.3;
             masterGain.connect(context.destination); 
