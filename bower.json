@@ -1,7 +1,7 @@
 {
     "name": "qwerty-hancock",
     "main": "qwerty-hancock.js",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "homepage": "http://stuartmemo.com/qwerty-hancock/",
     "authors": [
         {
@@ -12,7 +12,7 @@
     ],
     "description": "An interactive HTML plugin-free keyboard for your web audio project.",
     "keywords": [
-        "web audio"
+        "web audio",
         "keyboard",
         "music",
         "musical",
