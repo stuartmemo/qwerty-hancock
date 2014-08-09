@@ -13,10 +13,7 @@ describe('Qwerty Hancock tests', function () {
         var qh = new QwertyHancock();
 
         expect(element.id).toBe('keyboard');
-        expect(element.offsetWidth).toBe(600);
-        expect(element.offsetHeight).toBe(150);
-        expect(element.querySelector('ul').offsetWidth).toBe(600);
-        expect(element.querySelector('ul').offsetHeight).toBe(150);
+        expect(element.querySelectorAll('li').length).toBeGreaterThan(0);
     });
 
     it('Can create keyboard with user specified dimensions', function () {
@@ -24,6 +21,18 @@ describe('Qwerty Hancock tests', function () {
 
         expect(element.offsetWidth).toBe(500);
         expect(element.offsetHeight).toBe(300);
+    });
+
+    it('Keyboard without specified dimensions uses element dimensions', function () {
+        var qh;
+
+        element.style.width = '200px';
+        element.style.height = '100px';
+
+        qh = new QwertyHancock(); 
+
+        expect(element.querySelector('ul').style.width).toBe(element.style.width);
+        expect(element.querySelector('ul').style.height).toBe(element.style.height);
     });
 
     it('White keys should be white by default', function () {

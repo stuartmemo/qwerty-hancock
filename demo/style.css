@@ -24,6 +24,11 @@ h2 {
     margin: 40px auto;
 }
 
+.keyboard {
+    width: 600px;
+    height: 150px;
+}
+
 .the-hancock {
     float: right;
     width: 300px;
