@@ -1,5 +1,5 @@
 /*
- * Qwerty Hancock keyboard library v0.4.1
+ * Qwerty Hancock keyboard library v0.4.3
  * The web keyboard for now people.
  * Copyright 2012-14, Stuart Memo
  *
@@ -10,7 +10,7 @@
  */
 
 (function (window, undefined) {
-    var version = '0.4.1',
+    var version = '0.4.3',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
@@ -54,13 +54,15 @@
      * @param  {object} user_settings
      */
     var init = function (us) {
+        var container;
+
         user_settings = us || {};
 
         settings = {
             id:             user_settings.id || 'keyboard',
             octaves:        user_settings.octaves || 3,
-            width:          user_settings.width || 600,
-            height:         user_settings.height || 150,
+            width:          user_settings.width,
+            height:         user_settings.height,
             startNote:      user_settings.startNote || 'A3',
             whiteKeyColour: user_settings.whiteKeyColour || '#fff',
             blackKeyColour: user_settings.blackKeyColour || '#000',
@@ -69,10 +71,20 @@
             keyboardLayout: user_settings.keyboardLayout || 'en'
         };
 
+        container = document.getElementById(settings.id);
+
+        if (typeof settings.width === 'undefined') {
+            settings.width = container.offsetWidth;
+        }
+
+        if (typeof settings.height === 'undefined') {
+            settings.height = container.offsetHeight;
+        }
+
         settings.startOctave = parseInt(settings.startNote.charAt(1), 10);
 
         createKeyboard();
-        addListeners.call(this, document.getElementById(settings.id));
+        addListeners.call(this, container);
     };
 
     /**

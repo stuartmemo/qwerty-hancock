@@ -1,5 +1,5 @@
 /*
- * Qwerty Hancock keyboard library v0.4.1
+ * Qwerty Hancock keyboard library v0.4.3
  * The web keyboard for now people.
  * Copyright 2012-14, Stuart Memo
  *
@@ -10,7 +10,7 @@
  */
 
 (function (window, undefined) {
-    var version = '0.4.1',
+    var version = '0.4.3',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
