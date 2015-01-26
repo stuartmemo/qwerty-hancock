@@ -1,7 +1,7 @@
 {
     "name": "qwerty-hancock",
-    "main": "qwerty-hancock.js",
-    "version": "0.4.3",
+    "main": "src/qwerty-hancock.js",
+    "version": "0.4.4",
     "homepage": "http://stuartmemo.com/qwerty-hancock/",
     "authors": [
         {
