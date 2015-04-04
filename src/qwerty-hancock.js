@@ -237,18 +237,22 @@
     * Call user's mouseDown event.
     */
     var mouseDown = function (element, callback) {
-        mouse_is_down = true;
-        lightenUp(element);
-        callback(element.title, getFrequencyOfNote(element.title));
+        if (element.tagName.toLowerCase() == 'li') {
+            mouse_is_down = true;
+            lightenUp(element);
+            callback(element.title, getFrequencyOfNote(element.title));
+        }
     };
 
     /**
     * Call user's mouseUp event.
     */
     var mouseUp = function (element, callback) {
-        mouse_is_down = false;
-        darkenDown(element);
-        callback(element.title, getFrequencyOfNote(element.title));
+        if (element.tagName.toLowerCase() == 'li') {
+            mouse_is_down = false;
+            darkenDown(element);
+            callback(element.title, getFrequencyOfNote(element.title));
+        }
     };
 
     /**
