@@ -3,7 +3,7 @@
   "name": "qwerty-hancock",
   "title": "Qwerty Hancock",
   "description": "An interactive HTML plugin-free keyboard for your web audio project.",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "repository": {
     "type": "git",
     "url": "git@github.com:stuartmemo/qwerty-hancock.git"
