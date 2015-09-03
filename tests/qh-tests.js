@@ -29,7 +29,7 @@ describe('Qwerty Hancock tests', function () {
         element.style.width = '200px';
         element.style.height = '100px';
 
-        qh = new QwertyHancock(); 
+        qh = new QwertyHancock();
 
         expect(element.querySelector('ul').style.width).toBe(element.style.width);
         expect(element.querySelector('ul').style.height).toBe(element.style.height);
@@ -38,7 +38,7 @@ describe('Qwerty Hancock tests', function () {
     it('White keys should be white by default', function () {
         var qh = new QwertyHancock(),
             white_keys = element.querySelectorAll('li[data-note-type="white"]');
-                
+
         for (var i = 0; i < white_keys.length; i++) {
             expect(white_keys[i].style.backgroundColor).toBe('rgb(255, 255, 255)');
         }
@@ -56,7 +56,7 @@ describe('Qwerty Hancock tests', function () {
     it('White keys should be user defined colour', function () {
         var qh = new QwertyHancock({whiteKeyColour: '#333'}),
             white_keys = element.querySelectorAll('li[data-note-type="white"]');
-    
+
         for (var i = 0; i < white_keys.length; i++) {
             expect(white_keys[i].style.backgroundColor).toBe('rgb(51, 51, 51)');
         }
