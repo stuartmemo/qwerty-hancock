@@ -278,7 +278,7 @@
             callback(element.title, getFrequencyOfNote(element.title));
         }
     };
- 
+
     /**
     * Create key DOM element.
     * @return {object} Key DOM element.
@@ -359,7 +359,7 @@
     var setKeyPressOffset = function (sorted_white_notes) {
         settings.keyPressOffset = sorted_white_notes[0] === 'C' ? 0 : 1;
     };
-    
+
     var createKeyboard = function () {
         var keyboard = {
             container: document.getElementById(settings.id),
@@ -410,7 +410,7 @@
             lightenUp(document.getElementById(key_pressed));
        }
     };
- 
+
     /**
      * Handle a keyboard key being released.
      * @param {element} key The DOM element of the key that was released.
@@ -483,7 +483,7 @@
             keyboard_element.addEventListener('touchcancel', function (event) {
                 mouseOut(event.target, that.keyUp);
             });
-        } 
+        }
     };
 
     /**

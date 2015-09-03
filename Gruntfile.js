@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         copy: {
-            main: { 
+            main: {
                 expand: true,
                 filter: 'isFile',
                 cwd: 'src/',
