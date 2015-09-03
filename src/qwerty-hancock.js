@@ -9,7 +9,12 @@
  * http://stuartmemo.com/qwerty-hancock
  */
 
-(function (window, undefined) {
+(function () {
+    var root = this;
+    /* In <script> context, `this` is the window.
+     * In node context (browserify), `this` is the node global.
+     */
+    var globalWindow = typeof global === 'undefined' ? root : root.window;
     var version = '0.4.5',
         settings = {},
         mouse_is_down = false,
@@ -437,12 +442,12 @@
         var that = this;
 
         // Key is pressed down on keyboard.
-        window.addEventListener('keydown', function (key) {
+        globalWindow.addEventListener('keydown', function (key) {
             keyboardDown(key, that.keyDown);
         });
- 
+
         // Key is released on keyboard.
-        window.addEventListener('keyup', function (key) {
+        globalWindow.addEventListener('keyup', function (key) {
             keyboardUp(key, that.keyUp);
         });
 
@@ -504,5 +509,12 @@
         init.call(this, settings);
     };
 
-    window.QwertyHancock = QwertyHancock;
-})(window);
+    if (typeof exports !== 'undefined') {
+      if (typeof module !== 'undefined' && module.exports) {
+        exports = module.exports = QwertyHancock;
+      }
+      exports.QwertyHancock = QwertyHancock;
+    } else {
+      root.QwertyHancock = QwertyHancock;
+    }
+})(this);

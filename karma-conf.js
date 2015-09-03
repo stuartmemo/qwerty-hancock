@@ -17,7 +17,7 @@ module.exports = function(config) {
     files: [
         'lib/key-simulator.js',
         'src/qwerty-hancock.js',
-        'tests/*.js'      
+        'tests/*-tests.js'      
     ],
 
 

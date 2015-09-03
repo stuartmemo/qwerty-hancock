@@ -21,6 +21,17 @@ module.exports = function (grunt) {
             }
         },
 
+        jasmine_node: {
+          options: {
+            forceExit: true,
+            match: '.',
+            matchall: false,
+            extensions: 'js',
+            specNameMatcher: 'spec'
+          },
+          spec: ['tests/qh-node-spec']
+        },
+
         uglify: {
             dist: {
                 files: {
@@ -38,9 +49,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-jasmine-node');
 
     // Tasks.
     grunt.registerTask('default', ['uglify']);
     grunt.registerTask('build', ['copy', 'uglify']);
-    grunt.registerTask('test', ['karma']);
+    grunt.registerTask('test', ['jasmine_node:spec', 'karma']);
 };
