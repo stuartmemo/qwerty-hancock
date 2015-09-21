@@ -87,6 +87,16 @@ describe('Qwerty Hancock tests', function () {
         expect(c4_key.style.backgroundColor).toBe('yellow');
     });
 
+    it('When user presses modifier key on computer keyboard, related keyboard key should not change colour', function () {
+        var qh = new QwertyHancock(),
+            d4_key = document.querySelector('#D4');
+
+        pressKey(83, { metaKey: true });
+
+        expect(d4_key.style.backgroundColor).not.toBe('yellow');
+        expect(d4_key.style.backgroundColor).toBe('rgb(255, 255, 255)');
+    });
+
     afterEach(function () {
         document.body.removeChild(element);
     });
