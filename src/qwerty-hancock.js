@@ -435,6 +435,14 @@
     };
 
     /**
+     * Determine whether pressed key is a modifier key or not.
+     * @param {KeyboardEvent} The keydown event of a pressed key
+     */
+    var isModifierKey = function (key) {
+        return key.ctrlKey ||  key.metaKey || key.altKey;
+    };
+
+    /**
      * Add event listeners to keyboard.
      * @param {element} keyboard_element
      */
@@ -443,11 +451,17 @@
 
         // Key is pressed down on keyboard.
         globalWindow.addEventListener('keydown', function (key) {
+            if (isModifierKey(key)) {
+              return;
+            }
             keyboardDown(key, that.keyDown);
         });
 
         // Key is released on keyboard.
         globalWindow.addEventListener('keyup', function (key) {
+            if (isModifierKey(key)) {
+              return;
+            }
             keyboardUp(key, that.keyUp);
         });
 
