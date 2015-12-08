@@ -14,12 +14,12 @@
     /* In <script> context, `this` is the window.
      * In node context (browserify), `this` is the node global.
      */
-    var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.5.1',
+    var globalWindow = typeof global === 'undefined' ? root : root.window,
+        version = '0.5.1',
         settings = {},
-        mouse_is_down = false,
+        mouseIsDown = false,
         keysDown = {},
-        key_map = {
+        keyMap = {
             65: 'Cl',
             87: 'C#l',
             83: 'Dl',
@@ -244,7 +244,7 @@
     */
     var mouseDown = function (element, callback) {
         if (element.tagName.toLowerCase() == 'li') {
-            mouse_is_down = true;
+            mouseIsDown = true;
             lightenUp(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -255,7 +255,7 @@
     */
     var mouseUp = function (element, callback) {
         if (element.tagName.toLowerCase() == 'li') {
-            mouse_is_down = false;
+            mouseIsDown = false;
             darkenDown(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -265,7 +265,7 @@
     * Call user's mouseDown if required.
     */
     var mouseOver = function (element, callback) {
-        if (mouse_is_down) {
+        if (mouseIsDown) {
             lightenUp(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -275,7 +275,7 @@
     * Call user's mouseUp if required.
     */
     var mouseOut = function (element, callback) {
-        if (mouse_is_down) {
+        if (mouseIsDown) {
             darkenDown(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -384,7 +384,7 @@
     };
 
     var getKeyPressed = function (keyCode) {
-        return key_map[keyCode]
+        return keyMap[keyCode]
                 .replace('l', parseInt(settings.startOctave, 10) + settings.keyPressOffset)
                 .replace('u', (parseInt(settings.startOctave, 10) + settings.keyPressOffset + 1)
                 .toString());
@@ -404,7 +404,7 @@
 
        keysDown[key.keyCode] = true;
 
-       if (typeof key_map[key.keyCode] !== 'undefined') {
+       if (typeof keyMap[key.keyCode] !== 'undefined') {
             key_pressed = getKeyPressed(key.keyCode);
 
             // Call user's noteDown function.
@@ -423,7 +423,7 @@
 
         delete keysDown[key.keyCode];
 
-        if (typeof key_map[key.keyCode] !== 'undefined') {
+        if (typeof keyMap[key.keyCode] !== 'undefined') {
             key_pressed = getKeyPressed(key.keyCode);
             // Call user's noteDown function.
             callback(key_pressed, getFrequencyOfNote(key_pressed));
@@ -445,6 +445,8 @@
      */
     var QwertyHancock = function (settings) {
         settings = settings || {};
+        settings.id = settings.id || 'keyboard';
+
         this.version = version;
 
         this.keyDown = function () {
@@ -458,31 +460,38 @@
         init.call(this, settings);
 
         // Add event listeners to the keyboard and browser window.
-        var keyboard_element = document.getElementById(settings.id || 'keyboard');
-        var keyDown = this.keyDown;
-        var keyUp = this.keyUp;
+        var keyboard_element = document.getElementById(settings.id),
+            keyDown = this.keyDown,
+            keyUp = this.keyUp;
 
-        var keyboardKeyDown = function(key) {
-          if (isModifierKey(key)) {
-            return;
-          }
-          keyboardDown(key, keyDown);
+        var keyboardKeyDown = function (key) {
+            if (isModifierKey(key)) {
+                return;
+            }
+
+            keyboardDown(key, keyDown);
         };
-        var keyboardKeyUp = function(key) {
-          if (isModifierKey(key)) {
-            return;
-          }
-          keyboardUp(key, keyUp);
+
+        var keyboardKeyUp = function (key) {
+            if (isModifierKey(key)) {
+                return;
+            }
+
+            keyboardUp(key, keyUp);
         };
+
         var mouseClickDown = function (event) {
             mouseDown(event.target, keyDown);
         };
+
         var mouseClickUp = function (event) {
             mouseUp(event.target, keyUp);
         };
+
         var mouseClickOver = function (event) {
             mouseOver(event.target, keyUp);
         };
+
         var mouseClickOut = function (event) {
             mouseOut(event.target, keyUp);
         };
@@ -529,11 +538,11 @@
     };
 
     if (typeof exports !== 'undefined') {
-      if (typeof module !== 'undefined' && module.exports) {
-        exports = module.exports = QwertyHancock;
-      }
-      exports.QwertyHancock = QwertyHancock;
+        if (typeof module !== 'undefined' && module.exports) {
+            exports = module.exports = QwertyHancock;
+        }
+        exports.QwertyHancock = QwertyHancock;
     } else {
-      root.QwertyHancock = QwertyHancock;
+        root.QwertyHancock = QwertyHancock;
     }
 })(this);

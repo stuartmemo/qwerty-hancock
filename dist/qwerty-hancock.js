@@ -14,12 +14,12 @@
     /* In <script> context, `this` is the window.
      * In node context (browserify), `this` is the node global.
      */
-    var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.5.1',
+    var globalWindow = typeof global === 'undefined' ? root : root.window,
+        version = '0.5.1',
         settings = {},
-        mouse_is_down = false,
+        mouseIsDown = false,
         keysDown = {},
-        key_map = {
+        keyMap = {
             65: 'Cl',
             87: 'C#l',
             83: 'Dl',
@@ -58,10 +58,8 @@
      * Merge user settings with defaults.
      * @param  {object} user_settings
      */
-    var init = function (us) {
+    var init = function (user_settings) {
         var container;
-
-        user_settings = us || {};
 
         settings = {
             id:             user_settings.id || 'keyboard',
@@ -89,7 +87,6 @@
         settings.startOctave = parseInt(settings.startNote.charAt(1), 10);
 
         createKeyboard();
-        addListeners.call(this, container);
     };
 
     /**
@@ -247,7 +244,7 @@
     */
     var mouseDown = function (element, callback) {
         if (element.tagName.toLowerCase() == 'li') {
-            mouse_is_down = true;
+            mouseIsDown = true;
             lightenUp(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -258,7 +255,7 @@
     */
     var mouseUp = function (element, callback) {
         if (element.tagName.toLowerCase() == 'li') {
-            mouse_is_down = false;
+            mouseIsDown = false;
             darkenDown(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -268,7 +265,7 @@
     * Call user's mouseDown if required.
     */
     var mouseOver = function (element, callback) {
-        if (mouse_is_down) {
+        if (mouseIsDown) {
             lightenUp(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -278,7 +275,7 @@
     * Call user's mouseUp if required.
     */
     var mouseOut = function (element, callback) {
-        if (mouse_is_down) {
+        if (mouseIsDown) {
             darkenDown(element);
             callback(element.title, getFrequencyOfNote(element.title));
         }
@@ -387,7 +384,7 @@
     };
 
     var getKeyPressed = function (keyCode) {
-        return key_map[keyCode]
+        return keyMap[keyCode]
                 .replace('l', parseInt(settings.startOctave, 10) + settings.keyPressOffset)
                 .replace('u', (parseInt(settings.startOctave, 10) + settings.keyPressOffset + 1)
                 .toString());
@@ -407,7 +404,7 @@
 
        keysDown[key.keyCode] = true;
 
-       if (typeof key_map[key.keyCode] !== 'undefined') {
+       if (typeof keyMap[key.keyCode] !== 'undefined') {
             key_pressed = getKeyPressed(key.keyCode);
 
             // Call user's noteDown function.
@@ -426,7 +423,7 @@
 
         delete keysDown[key.keyCode];
 
-        if (typeof key_map[key.keyCode] !== 'undefined') {
+        if (typeof keyMap[key.keyCode] !== 'undefined') {
             key_pressed = getKeyPressed(key.keyCode);
             // Call user's noteDown function.
             callback(key_pressed, getFrequencyOfNote(key_pressed));
@@ -435,60 +432,11 @@
     };
 
     /**
-     * Add event listeners to keyboard.
-     * @param {element} keyboard_element
+     * Determine whether pressed key is a modifier key or not.
+     * @param {KeyboardEvent} The keydown event of a pressed key
      */
-    var addListeners = function (keyboard_element) {
-        var that = this;
-
-        // Key is pressed down on keyboard.
-        globalWindow.addEventListener('keydown', function (key) {
-            keyboardDown(key, that.keyDown);
-        });
-
-        // Key is released on keyboard.
-        globalWindow.addEventListener('keyup', function (key) {
-            keyboardUp(key, that.keyUp);
-        });
-
-        // Mouse is clicked down on keyboard element.
-        keyboard_element.addEventListener('mousedown', function (event) {
-            mouseDown(event.target, that.keyDown);
-        });
-
-        // Mouse is released from keyboard element.
-        keyboard_element.addEventListener('mouseup', function (event) {
-            mouseUp(event.target, that.keyUp);
-        });
-
-        // Mouse is moved over keyboard element.
-        keyboard_element.addEventListener('mouseover', function (event) {
-            mouseOver(event.target, that.keyDown);
-        });
-
-        // Mouse is moved out of keyvoard element.
-        keyboard_element.addEventListener('mouseout', function (event) {
-            mouseOut(event.target, that.keyUp);
-        });
-
-        // Device supports touch events.
-        if ('ontouchstart' in document.documentElement) {
-            keyboard_element.addEventListener('touchstart', function (event) {
-                mouseDown(event.target, that.keyDown);
-            });
-
-            keyboard_element.addEventListener('touchend', function (event) {
-                mouseUp(event.target, that.keyUp);
-            });
-
-            keyboard_element.addEventListener('touchleave', function (event) {
-                mouseOut(event.target, that.keyUp);
-            });
-
-            keyboard_element.addEventListener('touchcancel', function (event) {
-                mouseOut(event.target, that.keyUp);
-            });
-        }
+    var isModifierKey = function (key) {
+        return key.ctrlKey ||  key.metaKey || key.altKey;
     };
 
     /**
@@ -496,6 +444,9 @@
      * @param {object} settings Optional user settings.
      */
     var QwertyHancock = function (settings) {
+        settings = settings || {};
+        settings.id = settings.id || 'keyboard';
+
         this.version = version;
 
         this.keyDown = function () {
@@ -507,14 +458,91 @@
         };
 
         init.call(this, settings);
+
+        // Add event listeners to the keyboard and browser window.
+        var keyboard_element = document.getElementById(settings.id),
+            keyDown = this.keyDown,
+            keyUp = this.keyUp;
+
+        var keyboardKeyDown = function (key) {
+            if (isModifierKey(key)) {
+                return;
+            }
+
+            keyboardDown(key, keyDown);
+        };
+
+        var keyboardKeyUp = function (key) {
+            if (isModifierKey(key)) {
+                return;
+            }
+
+            keyboardUp(key, keyUp);
+        };
+
+        var mouseClickDown = function (event) {
+            mouseDown(event.target, keyDown);
+        };
+
+        var mouseClickUp = function (event) {
+            mouseUp(event.target, keyUp);
+        };
+
+        var mouseClickOver = function (event) {
+            mouseOver(event.target, keyUp);
+        };
+
+        var mouseClickOut = function (event) {
+            mouseOut(event.target, keyUp);
+        };
+
+        // Key is pressed down on keyboard.
+        globalWindow.addEventListener('keydown', keyboardKeyDown);
+
+        // Key is released on keyboard.
+        globalWindow.addEventListener('keyup', keyboardKeyUp);
+
+        // Mouse is clicked down on keyboard element.
+        keyboard_element.addEventListener('mousedown', mouseClickDown);
+
+        // Mouse is released from keyboard element.
+        keyboard_element.addEventListener('mouseup', mouseClickUp);
+
+        // Mouse is moved over keyboard element.
+        keyboard_element.addEventListener('mouseover', mouseClickOver);
+
+        // Mouse is moved out of keyboard element.
+        keyboard_element.addEventListener('mouseout', mouseClickOut);
+
+        // Device supports touch events.
+        if ('ontouchstart' in document.documentElement) {
+            keyboard_element.addEventListener('touchstart', mouseClickDown);
+            keyboard_element.addEventListener('touchend', mouseClickUp);
+            keyboard_element.addEventListener('touchleave', mouseClickOut);
+            keyboard_element.addEventListener('touchcancel', mouseClickOut);
+        }
+
+        this.removeEvents = function () {
+          globalWindow.removeEventListener('keydown', keyboardKeyDown);
+          globalWindow.removeEventListener('keyup', keyboardKeyUp);
+          keyboard_element.removeEventListener('mousedown', mouseClickDown);
+          keyboard_element.removeEventListener('mouseup', mouseClickUp);
+          keyboard_element.removeEventListener('mouseover', mouseClickOver);
+          keyboard_element.removeEventListener('mouseout', mouseClickOut);
+          keyboard_element.removeEventListener('touchstart', mouseClickDown);
+          keyboard_element.removeEventListener('touchend', mouseClickUp);
+          keyboard_element.removeEventListener('touchleave', mouseClickOut);
+          keyboard_element.removeEventListener('touchcancel', mouseClickOut);
+        }
+
     };
 
     if (typeof exports !== 'undefined') {
-      if (typeof module !== 'undefined' && module.exports) {
-        exports = module.exports = QwertyHancock;
-      }
-      exports.QwertyHancock = QwertyHancock;
+        if (typeof module !== 'undefined' && module.exports) {
+            exports = module.exports = QwertyHancock;
+        }
+        exports.QwertyHancock = QwertyHancock;
     } else {
-      root.QwertyHancock = QwertyHancock;
+        root.QwertyHancock = QwertyHancock;
     }
 })(this);
