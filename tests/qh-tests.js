@@ -9,25 +9,6 @@ describe('Qwerty Hancock tests', function () {
         document.body.appendChild(element);
     });
 
-    describe('removeEvents()', function () {
-        it('removes all event listeners that were added by Qwerty Hancock', function () {
-            var qh = new QwertyHancock(),
-                e4_key = document.querySelector('#E4'),
-                f4_key = document.querySelector('#F4');
-
-            pressKey(68); // 'D' on the computer keyboard
-
-            expect(e4_key.style.backgroundColor).toBe('yellow');
-
-            qh.removeEvents();
-
-            pressKey(70); // 'F' on the computer keyboard
-
-            expect(f4_key.style.backgroundColor).not.toBe('yellow');
-            expect(f4_key.style.backgroundColor).toBe('rgb(255, 255, 255)');
-        });
-    });
-
     it('Can create keyboard without any user settings', function () {
         var qh = new QwertyHancock();
 
