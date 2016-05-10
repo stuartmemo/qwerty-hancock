@@ -397,12 +397,13 @@
      * Handle a keyboard key being pressed.
      * @param {object} key The keyboard event of the currently pressed key.
      * @param {callback} callback The user's noteDown function.
+     * @return {boolean} true if it was a key (combo) used by qwerty-hancock
      */
     var keyboardDown = function (key, callback) {
         var key_pressed;
 
         if (key.keyCode in keysDown) {
-           return;
+           return false;
         }
 
        keysDown[key.keyCode] = true;
@@ -413,13 +414,16 @@
             // Call user's noteDown function.
             callback(key_pressed, getFrequencyOfNote(key_pressed));
             lightenUp(document.getElementById(key_pressed));
+            return true;
        }
+       return false;
     };
 
     /**
      * Handle a keyboard key being released.
      * @param {element} key The DOM element of the key that was released.
      * @param {callback} callback The user's noteDown function.
+     * @return {boolean} true if it was a key (combo) used by qwerty-hancock
      */
     var keyboardUp = function (key, callback) {
         var key_pressed;
@@ -431,7 +435,9 @@
             // Call user's noteDown function.
             callback(key_pressed, getFrequencyOfNote(key_pressed));
             darkenDown(document.getElementById(key_pressed));
+            return true;
         }
+        return false;
     };
 
     /**
@@ -454,7 +460,9 @@
             if (isModifierKey(key)) {
               return;
             }
-            keyboardDown(key, that.keyDown);
+            if (keyboardDown(key, that.keyDown)) {
+                key.preventDefault();
+            }
         });
 
         // Key is released on keyboard.
@@ -462,7 +470,9 @@
             if (isModifierKey(key)) {
               return;
             }
-            keyboardUp(key, that.keyUp);
+            if (keyboardUp(key, that.keyUp)) {
+                key.preventDefault();
+            }
         });
 
         // Mouse is clicked down on keyboard element.
