@@ -1,7 +1,7 @@
 /*
- * Qwerty Hancock keyboard library v0.5.1
+ * Qwerty Hancock keyboard library v0.6.0
  * The web keyboard for now people.
- * Copyright 2012-15, Stuart Memo
+ * Copyright 2012-18, Stuart Memo
  *
  * Licensed under the MIT License
  * http://opensource.org/licenses/mit-license.php
@@ -15,7 +15,7 @@
      * In node context (browserify), `this` is the node global.
      */
     var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.5.1',
+    var version = '0.6.0',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
@@ -397,12 +397,13 @@
      * Handle a keyboard key being pressed.
      * @param {object} key The keyboard event of the currently pressed key.
      * @param {callback} callback The user's noteDown function.
+     * @return {boolean} true if it was a key (combo) used by qwerty-hancock
      */
     var keyboardDown = function (key, callback) {
         var key_pressed;
 
         if (key.keyCode in keysDown) {
-           return;
+           return false;
         }
 
        keysDown[key.keyCode] = true;
@@ -413,13 +414,16 @@
             // Call user's noteDown function.
             callback(key_pressed, getFrequencyOfNote(key_pressed));
             lightenUp(document.getElementById(key_pressed));
+            return true;
        }
+       return false;
     };
 
     /**
      * Handle a keyboard key being released.
      * @param {element} key The DOM element of the key that was released.
      * @param {callback} callback The user's noteDown function.
+     * @return {boolean} true if it was a key (combo) used by qwerty-hancock
      */
     var keyboardUp = function (key, callback) {
         var key_pressed;
@@ -431,7 +435,9 @@
             // Call user's noteDown function.
             callback(key_pressed, getFrequencyOfNote(key_pressed));
             darkenDown(document.getElementById(key_pressed));
+            return true;
         }
+        return false;
     };
 
     /**
@@ -454,7 +460,9 @@
             if (isModifierKey(key)) {
               return;
             }
-            keyboardDown(key, that.keyDown);
+            if (keyboardDown(key, that.keyDown)) {
+                key.preventDefault();
+            }
         });
 
         // Key is released on keyboard.
@@ -462,7 +470,9 @@
             if (isModifierKey(key)) {
               return;
             }
-            keyboardUp(key, that.keyUp);
+            if (keyboardUp(key, that.keyUp)) {
+                key.preventDefault();
+            }
         });
 
         // Mouse is clicked down on keyboard element.
