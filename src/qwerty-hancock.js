@@ -1,7 +1,7 @@
 /*
- * Qwerty Hancock keyboard library v0.5.1
+ * Qwerty Hancock keyboard library v0.6.0
  * The web keyboard for now people.
- * Copyright 2012-15, Stuart Memo
+ * Copyright 2012-18, Stuart Memo
  *
  * Licensed under the MIT License
  * http://opensource.org/licenses/mit-license.php
@@ -15,7 +15,7 @@
      * In node context (browserify), `this` is the node global.
      */
     var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.5.1',
+    var version = '0.6.0',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
