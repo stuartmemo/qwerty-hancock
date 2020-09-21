@@ -1,5 +1,5 @@
 /*
- * Qwerty Hancock keyboard library v0.6.0
+ * Qwerty Hancock keyboard library v0.6.1
  * The web keyboard for now people.
  * Copyright 2012-18, Stuart Memo
  *
@@ -15,7 +15,7 @@
      * In node context (browserify), `this` is the node global.
      */
     var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.6.0',
+    var version = '0.6.1',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
@@ -87,6 +87,31 @@
         }
 
         settings.startOctave = parseInt(settings.startNote.charAt(1), 10);
+        settings.keyOctave = user_settings.keyOctave || settings.startOctave;
+
+        // Add getters and setters
+        this.setKeyOctave = function(octave){
+            settings.keyOctave = octave;
+            return settings.keyOctave;
+        }
+        this.getKeyOctave = function(){
+            return settings.keyOctave;
+        }
+        this.keyOctaveUp = function(){
+            settings.keyOctave++;
+            return settings.keyOctave;
+        }
+        this.keyOctaveDown = function(){
+            settings.keyOctave--;
+            return settings.keyOctave;
+        }
+        this.getKeyMap = function(){
+            return key_map;
+        }
+        this.setKeyMap = function(newKeyMap){
+            key_map = newKeyMap;
+            return key_map;
+        }
 
         createKeyboard();
         addListeners.call(this, container);
@@ -236,6 +261,7 @@
             el.style.margin = 0;
             el.style.width = settings.width + 'px';
             el.style['-webkit-user-select'] = 'none';
+            el.style.boxSizing = 'content-box';
         };
 
         styleElement(keyboard.container);
@@ -388,8 +414,8 @@
 
     var getKeyPressed = function (keyCode) {
         return key_map[keyCode]
-                .replace('l', parseInt(settings.startOctave, 10) + settings.keyPressOffset)
-                .replace('u', (parseInt(settings.startOctave, 10) + settings.keyPressOffset + 1)
+                .replace('l', parseInt(settings.keyOctave, 10) + settings.keyPressOffset)
+                .replace('u', (parseInt(settings.keyOctave, 10) + settings.keyPressOffset + 1)
                 .toString());
     };
 
@@ -529,6 +555,17 @@
         this.keyUp = function () {
             // Placeholder function.
         };
+
+        this.setKeyOctave = function(octave){
+            // Placeholder function.
+        };
+
+        this.getKeyOctave = function(){};
+        this.keyOctaveUp = function(){};
+        this.keyOctaveDown = function(){};
+
+        this.getKeyMap = function(){};
+        this.setKeyMap = function(newKeyMap){};
 
         init.call(this, settings);
     };
