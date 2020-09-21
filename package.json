@@ -3,7 +3,7 @@
   "name": "qwerty-hancock",
   "title": "Qwerty Hancock",
   "description": "An interactive HTML plugin-free keyboard for your web audio project.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "main": "dist/qwerty-hancock.js",
   "repository": {
     "type": "git",
