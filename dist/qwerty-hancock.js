@@ -1,5 +1,5 @@
 /*
- * Qwerty Hancock keyboard library v0.7.1
+ * Qwerty Hancock keyboard library v0.7.2
  * The web keyboard for now people.
  * Copyright 2012-20, Stuart Memo
  *
@@ -15,7 +15,7 @@
      * In node context (browserify), `this` is the node global.
      */
     var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.7.1',
+    var version = '0.7.2',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
@@ -209,6 +209,8 @@
         key.el.style.height = settings.height + 'px';
         key.el.style.width = key.width + 'px';
         key.el.style.borderRadius = '0 0 5px 5px';
+        key.el.style.position = 'relative';
+        key.el.style.zIndex = '1';
 
         if (key.noteNumber === getTotalWhiteKeys() - 1) {
             key.el.style.border = '1px solid ' + settings.borderColour;
@@ -230,6 +232,7 @@
         key.el.style.width = black_key_width + 'px';
         key.el.style.height = (settings.height / 1.5) + 'px';
         key.el.style.borderRadius = '0 0 3px 3px';
+        key.el.style.zIndex = '2';
     };
 
     /**
