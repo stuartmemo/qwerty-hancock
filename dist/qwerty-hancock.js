@@ -422,8 +422,6 @@
             keyboard.container.appendChild(keyboard.el);
         }
 
-        // console.log(keyboard.el.querySelector('ul').offsetWidth)
-
         return keyboard;
     };
 
