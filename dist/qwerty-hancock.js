@@ -1,5 +1,5 @@
 /*
- * Qwerty Hancock keyboard library v0.7.2
+ * Qwerty Hancock keyboard library v0.8.0
  * The web keyboard for now people.
  * Copyright 2012-20, Stuart Memo
  *
@@ -15,7 +15,7 @@
      * In node context (browserify), `this` is the node global.
      */
     var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.7.2',
+    var version = '0.8.0',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
@@ -263,13 +263,13 @@
             el.style.position = 'relative';
             el.style.listStyle = 'none';
             el.style.margin = settings.margin;
-            el.style.width = settings.width + 'px';
             el.style['-webkit-user-select'] = 'none';
             el.style.boxSizing = 'content-box';
         };
 
         styleElement(keyboard.container);
         styleElement(keyboard.el);
+        keyboard.el.style.width = (keyboard.totalWhiteKeys * (getWhiteKeyWidth(keyboard.totalWhiteKeys) + 1) + 2) + 'px';
     };
 
     /**
@@ -382,7 +382,10 @@
             note_counter++;
         }
 
-        return keys;
+        return {
+            keys: keys,
+            totalWhiteKeys: total_white_keys
+        };
     };
 
     var addKeysToKeyboard = function (keyboard) {
@@ -403,7 +406,9 @@
             notesWithSharps: orderNotes(['C', 'D', 'F', 'G', 'A']),
         };
 
-        keyboard.keys = createKeys.call(keyboard);
+        var keysObj = createKeys.call(keyboard);
+        keyboard.keys = keysObj.keys;
+        keyboard.totalWhiteKeys = keysObj.totalWhiteKeys;
 
         setKeyPressOffset(keyboard.whiteNotes);
         styleKeyboard(keyboard);
