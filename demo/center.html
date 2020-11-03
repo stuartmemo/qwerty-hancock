@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Qwerty Hancock &mdash; vector JavaScript keyboard for web audio projects</title>
+        <meta name="description" content="Qwerty Hancock is a vector JavaScript keyboard for your web audio project." />
+        <meta name="author" content="Stuart Memo" />
+        <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>
+        <link rel="stylesheet" href="style.css"/>
+    </head>
+    <body>
+        <div class="container" style="background:yellow; width: 800px;">
+            <h2>Demonstration</h2>
+            <div id="keyboard"></div>
+        </div>
+        <script src="../src/qwerty-hancock.js"></script>
+        <script>
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+            var context = new AudioContext(),
+                settings = {
+                    id: 'keyboard',
+                    width: 700,
+                    height: 150,
+                    startNote: 'A2',
+                    margin: 'auto',
+                    whiteNotesColour: '#fff',
+                    blackNotesColour: '#000',
+                    borderColour: '#000',
+                    activeColour: 'yellow',
+                    octaves: 3
+                },
+                keyboard = new QwertyHancock(settings);
+
+            masterGain = context.createGain();
+            nodes = [];
+
+            masterGain.gain.value = 0.3;
+            masterGain.connect(context.destination); 
+
+            keyboard.keyDown = function (note, frequency) {
+                var oscillator = context.createOscillator();
+                oscillator.type = 'square';
+                oscillator.frequency.value = frequency;
+                oscillator.connect(masterGain);
+                oscillator.start(0);
+
+                nodes.push(oscillator);
+            };
+
+            keyboard.keyUp = function (note, frequency) {
+                var new_nodes = [];
+
+                for (var i = 0; i < nodes.length; i++) {
+                    if (Math.round(nodes[i].frequency.value) === Math.round(frequency)) {
+                        nodes[i].stop(0);
+                        nodes[i].disconnect();
+                    } else {
+                        new_nodes.push(nodes[i]);
+                    }
+                }
+
+                nodes = new_nodes;
+            };
+
+            keyboard = new QwertyHancock(settings);
+
+            // Analytics
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-32368229-1']);
+            _gaq.push(['_trackPageview']);
+
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
+    </body>
+</html>
