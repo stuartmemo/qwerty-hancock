@@ -1,5 +1,5 @@
 /*
- * Qwerty Hancock keyboard library v0.8.0
+ * Qwerty Hancock keyboard library v0.9.0
  * The web keyboard for now people.
  * Copyright 2012-20, Stuart Memo
  *
@@ -15,7 +15,7 @@
      * In node context (browserify), `this` is the node global.
      */
     var globalWindow = typeof global === 'undefined' ? root : root.window;
-    var version = '0.8.0',
+    var version = '0.9.0',
         settings = {},
         mouse_is_down = false,
         keysDown = {},
@@ -74,7 +74,8 @@
             blackKeyColour: user_settings.blackKeyColour || '#000',
             activeColour:   user_settings.activeColour || 'yellow',
             borderColour:   user_settings.borderColour || '#000',
-            keyboardLayout: user_settings.keyboardLayout || 'en'
+            keyboardLayout: user_settings.keyboardLayout || 'en',
+            musicalTyping:  user_settings.musicalTyping === false ? false : true
         };
 
         container = document.getElementById(settings.id);
@@ -494,25 +495,27 @@
     var addListeners = function (keyboard_element) {
         var that = this;
 
-        // Key is pressed down on keyboard.
-        globalWindow.addEventListener('keydown', function (key) {
-            if (isModifierKey(key)) {
-              return;
-            }
-            if (keyboardDown(key, that.keyDown)) {
-                key.preventDefault();
-            }
-        });
+        if (settings.musicalTyping) {
+            // Key is pressed down on keyboard.
+            globalWindow.addEventListener('keydown', function (key) {
+                if (isModifierKey(key)) {
+                return;
+                }
+                if (keyboardDown(key, that.keyDown)) {
+                    key.preventDefault();
+                }
+            });
 
-        // Key is released on keyboard.
-        globalWindow.addEventListener('keyup', function (key) {
-            if (isModifierKey(key)) {
-              return;
-            }
-            if (keyboardUp(key, that.keyUp)) {
-                key.preventDefault();
-            }
-        });
+            // Key is released on keyboard.
+            globalWindow.addEventListener('keyup', function (key) {
+                if (isModifierKey(key)) {
+                return;
+                }
+                if (keyboardUp(key, that.keyUp)) {
+                    key.preventDefault();
+                }
+            });
+        }
 
         // Mouse is clicked down on keyboard element.
         keyboard_element.addEventListener('mousedown', function (event) {

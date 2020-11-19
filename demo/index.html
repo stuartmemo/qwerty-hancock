@@ -94,7 +94,8 @@ keyboard.keyUp = function (note, frequency) {
                     blackNotesColour: '#000',
                     borderColour: '#000',
                     activeColour: 'yellow',
-                    octaves: 2
+                    octaves: 2,
+                    musicalTyping: false
                 },
                 keyboard = new QwertyHancock(settings);
 
@@ -115,18 +116,18 @@ keyboard.keyUp = function (note, frequency) {
             };
 
             keyboard.keyUp = function (note, frequency) {
-                var new_nodes = [];
+                const newNodes = [];
 
                 for (var i = 0; i < nodes.length; i++) {
                     if (Math.round(nodes[i].frequency.value) === Math.round(frequency)) {
                         nodes[i].stop(0);
                         nodes[i].disconnect();
                     } else {
-                        new_nodes.push(nodes[i]);
+                        newNodes.push(nodes[i]);
                     }
                 }
 
-                nodes = new_nodes;
+                nodes = newNodes;
             };
 
             keyboard = new QwertyHancock(settings);
