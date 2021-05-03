@@ -212,6 +212,7 @@
         key.el.style.borderRadius = '0 0 5px 5px';
         key.el.style.position = 'relative';
         key.el.style.zIndex = '1';
+        key.el.style.boxSizing = 'content-box'
 
         if (key.noteNumber === getTotalWhiteKeys() - 1) {
             key.el.style.border = '1px solid ' + settings.borderColour;
@@ -234,6 +235,7 @@
         key.el.style.height = (settings.height / 1.5) + 'px';
         key.el.style.borderRadius = '0 0 3px 3px';
         key.el.style.zIndex = '2';
+        key.el.style.boxSizing = 'content-box'
     };
 
     /**
