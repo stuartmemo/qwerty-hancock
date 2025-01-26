@@ -1,14 +1,16 @@
 /* jshint browser: true, jest: true, node: true */
 'use strict';
 
-const testDom = require('./helpers/test-dom');
+const { JSDOM } = require('jsdom');
 const QwertyHancock = require('../src/qwerty-hancock');
 
 describe('QwertyHancock', () => {
   let element;
 
   beforeEach(() => {
-    testDom('<html><body></body></html>');
+    const { window } = new JSDOM('<html><body></body></html>');
+    global.document = window.document;
+    global.window = window;
     element = document.createElement('div');
     element.id = 'keyboard';
     document.body.appendChild(element);
