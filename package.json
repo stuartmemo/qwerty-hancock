@@ -3,7 +3,7 @@
   "name": "qwerty-hancock",
   "title": "Qwerty Hancock",
   "description": "An interactive HTML plugin-free keyboard for your web audio project.",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "main": "dist/qwerty-hancock.js",
   "repository": {
     "type": "git",
@@ -11,21 +11,15 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "grunt": "~1.3.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "latest",
-    "grunt-jasmine-node": "^0.3.1",
-    "grunt-karma": "~4.0.0",
     "jsdom": "^16.x.x",
-    "karma": "~5.2.3",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-firefox-launcher": "~2.1.0",
-    "karma-jasmine": "~4.0.1",
-    "karma-opera-launcher": "~1.0.0",
-    "karma-phantomjs-launcher": "~1.0.4",
-    "karma-safari-launcher": "~1.0.0"
+    "jest": "^27.0.0",
+    "playwright": "^1.12.0",
+    "uglify-js": "^3.13.10"
   },
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start ./karma-conf.js --browsers Firefox --single-run"
+    "copy": "cp src/qwerty-hancock.js dist/qwerty-hancock.js",
+    "uglify": "uglifyjs src/qwerty-hancock.js -o dist/qwerty-hancock.min.js --compress --mangle",
+    "test": "jest",
+    "build": "npm run copy && npm run uglify"
   }
 }

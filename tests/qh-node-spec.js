@@ -1,82 +1,83 @@
-/* jshint browser: true, jasmine: true, node: true */
+/* jshint browser: true, jest: true, node: true */
 'use strict';
 
-var testDom = require('./helpers/test-dom');
+const { JSDOM } = require('jsdom');
+const QwertyHancock = require('../src/qwerty-hancock');
 
+describe('QwertyHancock', () => {
+  let element;
 
-describe('QwertyHancock', function () {
-  var element, QwertyHancock;
-
-  beforeEach(function () {
-    testDom('<html><body></body></html>');
+  beforeEach(() => {
+    const { window } = new JSDOM('<html><body></body></html>');
+    global.document = window.document;
+    global.window = window;
     element = document.createElement('div');
     element.id = 'keyboard';
     document.body.appendChild(element);
-    QwertyHancock = require('../src/qwerty-hancock');
   });
 
-  it('is node requirable', function () {
-    expect(QwertyHancock).toExist;
+  it('is node requirable', () => {
+    expect(QwertyHancock).toBeDefined();
   });
 
-  it('Can create keyboard without any user settings', function () {
-      var qh = new QwertyHancock();
+  it('Can create keyboard without any user settings', () => {
+    const qh = new QwertyHancock();
 
-      expect(element.id).toBe('keyboard');
-      expect(element.querySelectorAll('li').length).toBeGreaterThan(0);
+    expect(element.id).toBe('keyboard');
+    expect(element.querySelectorAll('li').length).toBeGreaterThan(0);
   });
 
-  it('Can create keyboard with user specified dimensions', function () {
-      var qh = new QwertyHancock({width: 500, height: 300});
+  it('Can create keyboard with user specified dimensions', () => {
+    const qh = new QwertyHancock({ width: 500, height: 300 });
 
-      expect(element.style.width).toBe('500px');
-      expect(element.style.height).toBe('300px');
+    expect(element.style.width).toBe('500px');
+    expect(element.style.height).toBe('300px');
   });
 
-  it('White keys should be white by default', function () {
-      var qh = new QwertyHancock(),
-          white_keys = element.querySelectorAll('li[data-note-type="white"]');
+  it('White keys should be white by default', () => {
+    const qh = new QwertyHancock();
+    const white_keys = element.querySelectorAll('li[data-note-type="white"]');
 
-      for (var i = 0; i < white_keys.length; i++) {
-          expect(white_keys[i].style.backgroundColor).toBe('rgb(255, 255, 255)');
-      }
+    white_keys.forEach((key) => {
+      expect(key.style.backgroundColor).toBe('rgb(255, 255, 255)');
+    });
   });
 
-  it('Black keys should be black by default', function () {
-      var qh = new QwertyHancock(),
-          black_keys = element.querySelectorAll('li[data-note-type="black"]');
+  it('Black keys should be black by default', () => {
+    const qh = new QwertyHancock();
+    const black_keys = element.querySelectorAll('li[data-note-type="black"]');
 
-      for (var i = 0; i < black_keys.length; i++) {
-          expect(black_keys[i].style.backgroundColor).toBe('rgb(0, 0, 0)');
-      }
+    black_keys.forEach((key) => {
+      expect(key.style.backgroundColor).toBe('rgb(0, 0, 0)');
+    });
   });
 
-  it('White keys should be user defined colour', function () {
-      var qh = new QwertyHancock({whiteKeyColour: '#333'}),
-          white_keys = element.querySelectorAll('li[data-note-type="white"]');
+  it('White keys should be user defined colour', () => {
+    const qh = new QwertyHancock({ whiteKeyColour: '#333' });
+    const white_keys = element.querySelectorAll('li[data-note-type="white"]');
 
-      for (var i = 0; i < white_keys.length; i++) {
-          expect(white_keys[i].style.backgroundColor).toBe('rgb(51, 51, 51)');
-      }
+    white_keys.forEach((key) => {
+      expect(key.style.backgroundColor).toBe('rgb(51, 51, 51)');
+    });
   });
 
-  it('Black keys should be user defined colour', function () {
-      var qh = new QwertyHancock({blackKeyColour: 'red'}),
-          black_keys = element.querySelectorAll('li[data-note-type="black"]');
+  it('Black keys should be user defined colour', () => {
+    const qh = new QwertyHancock({ blackKeyColour: 'red' });
+    const black_keys = element.querySelectorAll('li[data-note-type="black"]');
 
-      for (var i = 0; i < black_keys.length; i++) {
-          expect(black_keys[i].style.backgroundColor).toBe('red');
-      }
+    black_keys.forEach((key) => {
+      expect(key.style.backgroundColor).toBe('red');
+    });
   });
 
-  it('First key on keyboard should be user defined note', function () {
-      var qh = new QwertyHancock({startNote: 'C4'}),
-          first_white_key = element.querySelector('li[data-note-type="white"]');
+  it('First key on keyboard should be user defined note', () => {
+    const qh = new QwertyHancock({ startNote: 'C4' });
+    const first_white_key = element.querySelector('li[data-note-type="white"]');
 
-      expect(first_white_key.id).toBe('C4');
+    expect(first_white_key.id).toBe('C4');
   });
 
-  afterEach(function () {
+  afterEach(() => {
     document.body.removeChild(element);
     delete global.document;
     delete global.window;
