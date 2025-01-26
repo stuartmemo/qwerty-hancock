@@ -1,4 +1,4 @@
 module.exports = {
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   testMatch: ['**/tests/**/*.js?(x)', '**/?(*.)+(spec|test).js?(x)'],
 };
