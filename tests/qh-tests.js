@@ -1,3 +1,6 @@
+const { pressKey } = require('../lib/key-simulator');
+const QwertyHancock = require('../src/qwerty-hancock');
+
 describe('Qwerty Hancock tests', () => {
     'use strict';
 
