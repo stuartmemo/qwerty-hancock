@@ -21,10 +21,17 @@
 
             <p>The example above is hooked-up to a basic square wave synth using the Web Audio API. That means you'll only hear something in <a href="http://www.google.co.uk/chrome">Chrome</a>, <a href="http://apple.com/safari">Safari</a> and <a href="http://getfirefox.com">Firefox</a> for the moment, but don't worry, you can use Qwerty Hancock for any project in any browser (apart from the old rubbish ones).</p>
 
-            <h2>Download</h2>
-            <p>The best way to start playing with Qwerty Hancock is to grab the source from <a href="https://raw.github.com/stuartmemo/qwerty-hancock/master/qwerty-hancock.js">GitHub</a>.
+            <h2>Install</h2>
+            <p>Install via npm:</p>
+            <pre>npm install qwerty-hancock</pre>
             <h2>How to use</h2>
-            <p>Qwerty Hancock has no dependencies whatsoever. All you need to do is include qwerty-hancock.js near the end of your page and create a keyboard by calling the function below whilst passing an object containing some fairly self-explanitory attributes.</p>
+            <p>Qwerty Hancock has no dependencies whatsoever. Import it in your project and create a keyboard:</p>
+            <pre>// ESM (recommended)
+import { QwertyHancock } from 'qwerty-hancock';
+
+// CommonJS
+const { QwertyHancock } = require('qwerty-hancock');</pre>
+            <p>Configuration options:</p>
             <dl>
                 <dt>id:</dt>
                 <dd>The id of the &lt;div&gt; that is going to "hold" your keyboard</dd>
@@ -41,30 +48,32 @@
                 <dt>startNote:</dt>
                 <dd>The first note of your keyboard with octave</dd>
 
-                <dt>whiteNotesColour</dt>
+                <dt>whiteKeyColour:</dt>
                 <dd>The colour of the white "natural" keys</dd>
 
-                <dt>blackNotesColour:</dt>
+                <dt>blackKeyColour:</dt>
                 <dd>The colour of the black "accidental" keys</dd>
 
-                <dt>hoverColour:</dt>
-                <dd>The keyOn hover colour</dd>
+                <dt>activeColour:</dt>
+                <dd>The keyOn active colour</dd>
 
                 <dt>keyboardLayout:</dt>
                 <dd>Currently supports "en" and "de"</dd>
             </dl>
             <p>A real-world example might look like this:</p>
-            <pre>var keyboard = new QwertyHancock({
-                 id: 'keyboard',
-                 width: 600,
-                 height: 150,
-                 octaves: 2,
-                 startNote: 'A3',
-                 whiteNotesColour: 'white',
-                 blackNotesColour: 'black',
-                 hoverColour: '#f3e939',
-                 keyboardLayout: 'en'
-            });</pre>
+            <pre>import { QwertyHancock } from 'qwerty-hancock';
+
+const keyboard = new QwertyHancock({
+    id: 'keyboard',
+    width: 600,
+    height: 150,
+    octaves: 2,
+    startNote: 'A3',
+    whiteKeyColour: 'white',
+    blackKeyColour: 'black',
+    activeColour: '#f3e939',
+    keyboardLayout: 'en'
+});</pre>
             <p>This will show us a lovely keyboard, but how do we get it to make some noise? Qwerty Hancock provides two handy hooks into which you can add your own functions.</p>
             <pre>keyboard.keyDown = function (note, frequency) {
     // Your code here
@@ -76,10 +85,10 @@ keyboard.keyUp = function (note, frequency) {
             <p>If you want to tie your keyboard into the Web Audio API, just view the source of this very page.</p>
             <h2>Need help or have an idea to make QH better?</h2>
             <p>No problem, just give me a shout on <a href="http://twitter.com/stuartmemo">Twitter</a>.</p>
-            <footer>Copyright 2012-13 <a href="http://stuartmemo.com">Stuart Memo</a>.<br/>
+            <footer>Copyright 2012-2025 <a href="http://stuartmemo.com">Stuart Memo</a>.<br/>
             Released under MIT licence.</footer>
         </div>
-        <script src="../src/qwerty-hancock.js"></script>
+        <script src="../dist/index.umd.js"></script>
         <script>
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -90,14 +99,14 @@ keyboard.keyUp = function (note, frequency) {
                     height: 150,
                     startNote: 'A2',
                     margin: 'auto',
-                    whiteNotesColour: '#fff',
-                    blackNotesColour: '#000',
+                    whiteKeyColour: '#fff',
+                    blackKeyColour: '#000',
                     borderColour: '#000',
                     activeColour: 'yellow',
                     octaves: 2,
                     musicalTyping: true
                 },
-                keyboard = new QwertyHancock(settings);
+                keyboard = new QwertyHancock.QwertyHancock(settings);
 
             masterGain = context.createGain();
             nodes = [];
@@ -130,7 +139,7 @@ keyboard.keyUp = function (note, frequency) {
                 nodes = newNodes;
             };
 
-            keyboard = new QwertyHancock(settings);
+            keyboard = new QwertyHancock.QwertyHancock(settings);
 
             // Analytics
             var _gaq = _gaq || [];

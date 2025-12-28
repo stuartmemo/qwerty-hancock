@@ -1,25 +1,68 @@
 {
-  "author": "Stuart Memo",
   "name": "qwerty-hancock",
-  "title": "Qwerty Hancock",
+  "version": "1.0.0",
   "description": "An interactive HTML plugin-free keyboard for your web audio project.",
-  "version": "0.11.0",
-  "main": "dist/qwerty-hancock.js",
+  "author": "Stuart Memo",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:stuartmemo/qwerty-hancock.git"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "jsdom": "^16.x.x",
-    "jest": "^27.0.0",
-    "playwright": "^1.12.0",
-    "uglify-js": "^3.13.10"
-  },
+  "keywords": [
+    "keyboard",
+    "piano",
+    "web-audio",
+    "music",
+    "synthesizer",
+    "midi",
+    "typescript"
+  ],
   "scripts": {
-    "copy": "cp src/qwerty-hancock.js dist/qwerty-hancock.js",
-    "uglify": "uglifyjs src/qwerty-hancock.js -o dist/qwerty-hancock.min.js --compress --mangle",
-    "test": "jest",
-    "build": "npm run copy && npm run uglify"
+    "build": "npm run build:types && npm run build:bundle",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:bundle": "rollup -c",
+    "dev": "rollup -c -w",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "prepublishOnly": "npm run build",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.1",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "rollup": "^4.28.1",
+    "rollup-plugin-dts": "^6.1.1",
+    "ts-jest": "^29.2.5",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.2"
   }
 }
