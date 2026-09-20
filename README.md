@@ -123,6 +123,20 @@ Supports all modern browsers (ES2020+):
 - Safari 14+
 - Edge 80+
 
+## Development
+
+Use the Node.js version in `.nvmrc` (Node 22) to build and test the project. The
+build tools require Node 20 or later; the published library supports Node 18 or
+later.
+
+```bash
+nvm use
+npm ci
+npm run typecheck
+npm test -- --runInBand
+npm run build
+```
+
 ## License
 
 MIT License - Copyright 2012-2025 Stuart Memo
