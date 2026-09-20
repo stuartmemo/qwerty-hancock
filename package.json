@@ -45,7 +45,7 @@
   "scripts": {
     "build": "npm run build:types && npm run build:bundle",
     "build:types": "tsc --emitDeclarationOnly",
-    "build:bundle": "rollup -c",
+    "build:bundle": "rollup -c --forceExit",
     "dev": "rollup -c -w",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",

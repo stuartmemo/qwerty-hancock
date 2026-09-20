@@ -60,7 +60,8 @@ export class QwertyHancock {
     // Initialize event state
     this.eventState = {
       mouseIsDown: false,
-      keysDown: new Set(),
+      mouseKey: null,
+      keysDown: new Map(),
     };
 
     // Resolve settings with defaults

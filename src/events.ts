@@ -7,7 +7,8 @@ import { lightenUp, darkenDown } from './styles';
  */
 export interface EventState {
   mouseIsDown: boolean;
-  keysDown: Set<string>;
+  mouseKey: HTMLElement | null;
+  keysDown: Map<string, string>;
 }
 
 /**
@@ -25,7 +26,24 @@ export interface EventCallbacks {
  * @returns true if any modifier key is pressed
  */
 function isModifierKey(event: KeyboardEvent): boolean {
-  return event.ctrlKey || event.metaKey || event.altKey;
+  return event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+}
+
+function isPianoKey(element: HTMLElement): boolean {
+  return element.tagName.toLowerCase() === 'li' && element.hasAttribute('data-note-type');
+}
+
+function releaseMouseKey(
+  state: EventState,
+  settings: ResolvedSettings,
+  callback: NoteCallback
+): void {
+  const element = state.mouseKey;
+  if (!element) return;
+
+  state.mouseKey = null;
+  darkenDown(element, settings);
+  callback(element.title, getFrequencyOfNote(element.title));
 }
 
 /**
@@ -35,29 +53,28 @@ function handleMouseDown(
   element: HTMLElement,
   state: EventState,
   settings: ResolvedSettings,
-  callback: NoteCallback
+  callbacks: EventCallbacks
 ): void {
-  if (element.tagName.toLowerCase() !== 'li') return;
+  if (!isPianoKey(element)) return;
 
   state.mouseIsDown = true;
+  if (state.mouseKey === element) return;
+  releaseMouseKey(state, settings, callbacks.keyUp);
+  state.mouseKey = element;
   lightenUp(element, settings.activeColour);
-  callback(element.title, getFrequencyOfNote(element.title));
+  callbacks.keyDown(element.title, getFrequencyOfNote(element.title));
 }
 
 /**
  * Handle mouse up on a key element.
  */
 function handleMouseUp(
-  element: HTMLElement,
   state: EventState,
   settings: ResolvedSettings,
   callback: NoteCallback
 ): void {
-  if (element.tagName.toLowerCase() !== 'li') return;
-
   state.mouseIsDown = false;
-  darkenDown(element, settings);
-  callback(element.title, getFrequencyOfNote(element.title));
+  releaseMouseKey(state, settings, callback);
 }
 
 /**
@@ -67,12 +84,14 @@ function handleMouseOver(
   element: HTMLElement,
   state: EventState,
   settings: ResolvedSettings,
-  callback: NoteCallback
+  callbacks: EventCallbacks
 ): void {
-  if (!state.mouseIsDown) return;
+  if (!state.mouseIsDown || !isPianoKey(element) || state.mouseKey === element) return;
 
+  releaseMouseKey(state, settings, callbacks.keyUp);
+  state.mouseKey = element;
   lightenUp(element, settings.activeColour);
-  callback(element.title, getFrequencyOfNote(element.title));
+  callbacks.keyDown(element.title, getFrequencyOfNote(element.title));
 }
 
 /**
@@ -84,10 +103,8 @@ function handleMouseOut(
   settings: ResolvedSettings,
   callback: NoteCallback
 ): void {
-  if (!state.mouseIsDown) return;
-
-  darkenDown(element, settings);
-  callback(element.title, getFrequencyOfNote(element.title));
+  if (!state.mouseIsDown || state.mouseKey !== element) return;
+  releaseMouseKey(state, settings, callback);
 }
 
 /**
@@ -104,12 +121,13 @@ function handleKeyDown(
 
   const key = event.key;
   if (!(key in keyMap)) return;
-  if (state.keysDown.has(key)) return;
+  const keyId = event.code || key;
+  if (state.keysDown.has(keyId)) return;
 
   event.preventDefault();
-  state.keysDown.add(key);
 
   const note = getKeyPressed(key, keyMap, settings);
+  state.keysDown.set(keyId, note);
   const element = document.getElementById(note);
 
   lightenUp(element, settings.activeColour);
@@ -123,17 +141,13 @@ function handleKeyUp(
   event: KeyboardEvent,
   state: EventState,
   settings: ResolvedSettings,
-  keyMap: KeyMap,
   callback: NoteCallback
 ): void {
-  if (isModifierKey(event)) return;
+  const keyId = event.code || event.key;
+  const note = state.keysDown.get(keyId);
+  if (!note) return;
 
-  const key = event.key;
-  if (!(key in keyMap)) return;
-
-  state.keysDown.delete(key);
-
-  const note = getKeyPressed(key, keyMap, settings);
+  state.keysDown.delete(keyId);
   const element = document.getElementById(note);
 
   darkenDown(element, settings);
@@ -161,26 +175,26 @@ export function addListeners(
 
   // Mouse events on container
   const onMouseDown = (event: MouseEvent) => {
-    handleMouseDown(event.target as HTMLElement, state, settings, callbacks.keyDown);
+    handleMouseDown(event.target as HTMLElement, state, settings, callbacks);
   };
-  const onMouseUp = (event: MouseEvent) => {
-    handleMouseUp(event.target as HTMLElement, state, settings, callbacks.keyUp);
+  const onMouseUp = () => {
+    handleMouseUp(state, settings, callbacks.keyUp);
   };
   const onMouseOver = (event: MouseEvent) => {
-    handleMouseOver(event.target as HTMLElement, state, settings, callbacks.keyDown);
+    handleMouseOver(event.target as HTMLElement, state, settings, callbacks);
   };
   const onMouseOut = (event: MouseEvent) => {
     handleMouseOut(event.target as HTMLElement, state, settings, callbacks.keyUp);
   };
 
   container.addEventListener('mousedown', onMouseDown);
-  container.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mouseup', onMouseUp);
   container.addEventListener('mouseover', onMouseOver);
   container.addEventListener('mouseout', onMouseOut);
 
   cleanupFunctions.push(() => {
     container.removeEventListener('mousedown', onMouseDown);
-    container.removeEventListener('mouseup', onMouseUp);
+    document.removeEventListener('mouseup', onMouseUp);
     container.removeEventListener('mouseover', onMouseOver);
     container.removeEventListener('mouseout', onMouseOut);
   });
@@ -188,10 +202,10 @@ export function addListeners(
   // Touch events (if supported)
   if ('ontouchstart' in document.documentElement) {
     const onTouchStart = (event: TouchEvent) => {
-      handleMouseDown(event.target as HTMLElement, state, settings, callbacks.keyDown);
+      handleMouseDown(event.target as HTMLElement, state, settings, callbacks);
     };
-    const onTouchEnd = (event: TouchEvent) => {
-      handleMouseUp(event.target as HTMLElement, state, settings, callbacks.keyUp);
+    const onTouchEnd = () => {
+      handleMouseUp(state, settings, callbacks.keyUp);
     };
     const onTouchLeave = (event: TouchEvent) => {
       handleMouseOut(event.target as HTMLElement, state, settings, callbacks.keyUp);
@@ -200,13 +214,13 @@ export function addListeners(
     container.addEventListener('touchstart', onTouchStart);
     container.addEventListener('touchend', onTouchEnd);
     container.addEventListener('touchleave' as keyof HTMLElementEventMap, onTouchLeave as EventListener);
-    container.addEventListener('touchcancel', onTouchLeave);
+    container.addEventListener('touchcancel', onTouchEnd);
 
     cleanupFunctions.push(() => {
       container.removeEventListener('touchstart', onTouchStart);
       container.removeEventListener('touchend', onTouchEnd);
       container.removeEventListener('touchleave' as keyof HTMLElementEventMap, onTouchLeave as EventListener);
-      container.removeEventListener('touchcancel', onTouchLeave);
+      container.removeEventListener('touchcancel', onTouchEnd);
     });
   }
 
@@ -216,7 +230,7 @@ export function addListeners(
       handleKeyDown(event, state, settings, keyMap, callbacks.keyDown);
     };
     const onKeyUp = (event: KeyboardEvent) => {
-      handleKeyUp(event, state, settings, keyMap, callbacks.keyUp);
+      handleKeyUp(event, state, settings, callbacks.keyUp);
     };
 
     window.addEventListener('keydown', onKeyDown);

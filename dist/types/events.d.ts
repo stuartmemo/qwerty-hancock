@@ -4,7 +4,8 @@ import type { KeyMap, NoteCallback, ResolvedSettings } from './types';
  */
 export interface EventState {
     mouseIsDown: boolean;
-    keysDown: Set<string>;
+    mouseKey: HTMLElement | null;
+    keysDown: Map<string, string>;
 }
 /**
  * Callbacks interface for event handling
