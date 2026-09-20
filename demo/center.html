@@ -5,7 +5,7 @@
         <title>Qwerty Hancock &mdash; vector JavaScript keyboard for web audio projects</title>
         <meta name="description" content="Qwerty Hancock is a vector JavaScript keyboard for your web audio project." />
         <meta name="author" content="Stuart Memo" />
-        <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>
+        <link href='https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap' rel='stylesheet'/>
         <link rel="stylesheet" href="style.css"/>
     </head>
     <body>
@@ -13,7 +13,7 @@
             <h2>Demonstration</h2>
             <div id="keyboard"></div>
         </div>
-        <script src="../src/qwerty-hancock.js"></script>
+        <script src="../dist/index.umd.js"></script>
         <script>
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -24,18 +24,18 @@
                     height: 150,
                     startNote: 'A2',
                     margin: 'auto',
-                    whiteNotesColour: '#fff',
-                    blackNotesColour: '#000',
+                    whiteKeyColour: '#fff',
+                    blackKeyColour: '#000',
                     borderColour: '#000',
                     activeColour: 'yellow',
                     octaves: 3
                 },
-                keyboard = new QwertyHancock(settings);
+                keyboard = new QwertyHancock.QwertyHancock(settings);
 
             masterGain = context.createGain();
             nodes = [];
 
-            masterGain.gain.value = 0.3;
+            masterGain.gain.value = 0.05;
             masterGain.connect(context.destination); 
 
             keyboard.keyDown = function (note, frequency) {
@@ -62,8 +62,6 @@
 
                 nodes = new_nodes;
             };
-
-            keyboard = new QwertyHancock(settings);
 
             // Analytics
             var _gaq = _gaq || [];

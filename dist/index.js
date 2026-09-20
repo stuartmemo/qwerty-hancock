@@ -401,45 +401,58 @@ function getKeyPressOffset(whiteNotes) {
  * @returns true if any modifier key is pressed
  */
 function isModifierKey(event) {
-    return event.ctrlKey || event.metaKey || event.altKey;
+    return event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 }
-/**
- * Handle mouse down on a key element.
- */
-function handleMouseDown(element, state, settings, callback) {
-    if (element.tagName.toLowerCase() !== 'li')
-        return;
-    state.mouseIsDown = true;
-    lightenUp(element, settings.activeColour);
-    callback(element.title, getFrequencyOfNote(element.title));
+function isPianoKey(element) {
+    return element.tagName.toLowerCase() === 'li' && element.hasAttribute('data-note-type');
 }
-/**
- * Handle mouse up on a key element.
- */
-function handleMouseUp(element, state, settings, callback) {
-    if (element.tagName.toLowerCase() !== 'li')
+function releaseMouseKey(state, settings, callback) {
+    const element = state.mouseKey;
+    if (!element)
         return;
-    state.mouseIsDown = false;
+    state.mouseKey = null;
     darkenDown(element, settings);
     callback(element.title, getFrequencyOfNote(element.title));
 }
 /**
+ * Handle mouse down on a key element.
+ */
+function handleMouseDown(element, state, settings, callbacks) {
+    if (!isPianoKey(element))
+        return;
+    state.mouseIsDown = true;
+    if (state.mouseKey === element)
+        return;
+    releaseMouseKey(state, settings, callbacks.keyUp);
+    state.mouseKey = element;
+    lightenUp(element, settings.activeColour);
+    callbacks.keyDown(element.title, getFrequencyOfNote(element.title));
+}
+/**
+ * Handle mouse up on a key element.
+ */
+function handleMouseUp(state, settings, callback) {
+    state.mouseIsDown = false;
+    releaseMouseKey(state, settings, callback);
+}
+/**
  * Handle mouse over on a key element (for drag behavior).
  */
-function handleMouseOver(element, state, settings, callback) {
-    if (!state.mouseIsDown)
+function handleMouseOver(element, state, settings, callbacks) {
+    if (!state.mouseIsDown || !isPianoKey(element) || state.mouseKey === element)
         return;
+    releaseMouseKey(state, settings, callbacks.keyUp);
+    state.mouseKey = element;
     lightenUp(element, settings.activeColour);
-    callback(element.title, getFrequencyOfNote(element.title));
+    callbacks.keyDown(element.title, getFrequencyOfNote(element.title));
 }
 /**
  * Handle mouse out on a key element (for drag behavior).
  */
 function handleMouseOut(element, state, settings, callback) {
-    if (!state.mouseIsDown)
+    if (!state.mouseIsDown || state.mouseKey !== element)
         return;
-    darkenDown(element, settings);
-    callback(element.title, getFrequencyOfNote(element.title));
+    releaseMouseKey(state, settings, callback);
 }
 /**
  * Handle keyboard key down event.
@@ -450,11 +463,12 @@ function handleKeyDown(event, state, settings, keyMap, callback) {
     const key = event.key;
     if (!(key in keyMap))
         return;
-    if (state.keysDown.has(key))
+    const keyId = event.code || key;
+    if (state.keysDown.has(keyId))
         return;
     event.preventDefault();
-    state.keysDown.add(key);
     const note = getKeyPressed(key, keyMap, settings);
+    state.keysDown.set(keyId, note);
     const element = document.getElementById(note);
     lightenUp(element, settings.activeColour);
     callback(note, getFrequencyOfNote(note));
@@ -462,14 +476,12 @@ function handleKeyDown(event, state, settings, keyMap, callback) {
 /**
  * Handle keyboard key up event.
  */
-function handleKeyUp(event, state, settings, keyMap, callback) {
-    if (isModifierKey(event))
+function handleKeyUp(event, state, settings, callback) {
+    const keyId = event.code || event.key;
+    const note = state.keysDown.get(keyId);
+    if (!note)
         return;
-    const key = event.key;
-    if (!(key in keyMap))
-        return;
-    state.keysDown.delete(key);
-    const note = getKeyPressed(key, keyMap, settings);
+    state.keysDown.delete(keyId);
     const element = document.getElementById(note);
     darkenDown(element, settings);
     callback(note, getFrequencyOfNote(note));
@@ -488,34 +500,34 @@ function addListeners(container, settings, keyMap, callbacks, state) {
     const cleanupFunctions = [];
     // Mouse events on container
     const onMouseDown = (event) => {
-        handleMouseDown(event.target, state, settings, callbacks.keyDown);
+        handleMouseDown(event.target, state, settings, callbacks);
     };
-    const onMouseUp = (event) => {
-        handleMouseUp(event.target, state, settings, callbacks.keyUp);
+    const onMouseUp = () => {
+        handleMouseUp(state, settings, callbacks.keyUp);
     };
     const onMouseOver = (event) => {
-        handleMouseOver(event.target, state, settings, callbacks.keyDown);
+        handleMouseOver(event.target, state, settings, callbacks);
     };
     const onMouseOut = (event) => {
         handleMouseOut(event.target, state, settings, callbacks.keyUp);
     };
     container.addEventListener('mousedown', onMouseDown);
-    container.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mouseup', onMouseUp);
     container.addEventListener('mouseover', onMouseOver);
     container.addEventListener('mouseout', onMouseOut);
     cleanupFunctions.push(() => {
         container.removeEventListener('mousedown', onMouseDown);
-        container.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('mouseup', onMouseUp);
         container.removeEventListener('mouseover', onMouseOver);
         container.removeEventListener('mouseout', onMouseOut);
     });
     // Touch events (if supported)
     if ('ontouchstart' in document.documentElement) {
         const onTouchStart = (event) => {
-            handleMouseDown(event.target, state, settings, callbacks.keyDown);
+            handleMouseDown(event.target, state, settings, callbacks);
         };
-        const onTouchEnd = (event) => {
-            handleMouseUp(event.target, state, settings, callbacks.keyUp);
+        const onTouchEnd = () => {
+            handleMouseUp(state, settings, callbacks.keyUp);
         };
         const onTouchLeave = (event) => {
             handleMouseOut(event.target, state, settings, callbacks.keyUp);
@@ -523,12 +535,12 @@ function addListeners(container, settings, keyMap, callbacks, state) {
         container.addEventListener('touchstart', onTouchStart);
         container.addEventListener('touchend', onTouchEnd);
         container.addEventListener('touchleave', onTouchLeave);
-        container.addEventListener('touchcancel', onTouchLeave);
+        container.addEventListener('touchcancel', onTouchEnd);
         cleanupFunctions.push(() => {
             container.removeEventListener('touchstart', onTouchStart);
             container.removeEventListener('touchend', onTouchEnd);
             container.removeEventListener('touchleave', onTouchLeave);
-            container.removeEventListener('touchcancel', onTouchLeave);
+            container.removeEventListener('touchcancel', onTouchEnd);
         });
     }
     // Keyboard events (if musical typing is enabled)
@@ -537,7 +549,7 @@ function addListeners(container, settings, keyMap, callbacks, state) {
             handleKeyDown(event, state, settings, keyMap, callbacks.keyDown);
         };
         const onKeyUp = (event) => {
-            handleKeyUp(event, state, settings, keyMap, callbacks.keyUp);
+            handleKeyUp(event, state, settings, callbacks.keyUp);
         };
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('keyup', onKeyUp);
@@ -600,7 +612,8 @@ class QwertyHancock {
         // Initialize event state
         this.eventState = {
             mouseIsDown: false,
-            keysDown: new Set(),
+            mouseKey: null,
+            keysDown: new Map(),
         };
         // Resolve settings with defaults
         this.settings = this.resolveSettings(userSettings);

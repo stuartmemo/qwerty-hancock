@@ -6,29 +6,39 @@ import { jest } from '@jest/globals';
  */
 function pressKey(
   key: string,
-  options: { metaKey?: boolean; ctrlKey?: boolean; altKey?: boolean } = {}
-): void {
+  options: { code?: string; metaKey?: boolean; ctrlKey?: boolean; altKey?: boolean; shiftKey?: boolean } = {}
+): KeyboardEvent {
   const event = new KeyboardEvent('keydown', {
     key,
+    code: options.code,
     metaKey: options.metaKey || false,
     ctrlKey: options.ctrlKey || false,
     altKey: options.altKey || false,
+    shiftKey: options.shiftKey || false,
+    bubbles: true,
+    cancelable: true,
+  });
+  window.dispatchEvent(event);
+  return event;
+}
+
+/**
+ * Helper to simulate a keyboard key release
+ */
+function releaseKey(key: string, options: { code?: string; metaKey?: boolean; shiftKey?: boolean } = {}): void {
+  const event = new KeyboardEvent('keyup', {
+    key,
+    code: options.code,
+    metaKey: options.metaKey || false,
+    shiftKey: options.shiftKey || false,
     bubbles: true,
     cancelable: true,
   });
   window.dispatchEvent(event);
 }
 
-/**
- * Helper to simulate a keyboard key release
- */
-function releaseKey(key: string): void {
-  const event = new KeyboardEvent('keyup', {
-    key,
-    bubbles: true,
-    cancelable: true,
-  });
-  window.dispatchEvent(event);
+function mouseEvent(target: Element | Document, type: string): void {
+  target.dispatchEvent(new MouseEvent(type, { bubbles: true }));
 }
 
 describe('Qwerty Hancock', () => {
@@ -184,13 +194,50 @@ describe('Qwerty Hancock', () => {
     it('modifier keys do not trigger note', () => {
       const qh = new QwertyHancock({ startNote: 'C4' });
       element = document.getElementById('keyboard');
+      const keyDownMock = jest.fn();
+      const keyUpMock = jest.fn();
+      qh.keyDown = keyDownMock;
+      qh.keyUp = keyUpMock;
 
-      // Press 's' key with meta modifier (Cmd+S on Mac)
-      pressKey('s', { metaKey: true });
+      for (const modifier of ['metaKey', 'ctrlKey', 'altKey', 'shiftKey'] as const) {
+        const event = pressKey('s', { [modifier]: true });
+        releaseKey('s');
+        expect(event.defaultPrevented).toBe(false);
+      }
 
       const d4Key = element?.querySelector<HTMLElement>('#D4');
       expect(d4Key?.style.backgroundColor).not.toBe('yellow');
       expect(d4Key?.style.backgroundColor).toBe('rgb(255, 255, 255)');
+      expect(keyDownMock).not.toHaveBeenCalled();
+      expect(keyUpMock).not.toHaveBeenCalled();
+
+      qh.destroy();
+    });
+
+    it('releases a playing note when a modifier is held on keyup', () => {
+      const qh = new QwertyHancock({ startNote: 'C4' });
+      const keyUpMock = jest.fn();
+      qh.keyUp = keyUpMock;
+
+      pressKey('p');
+      releaseKey('p', { metaKey: true });
+
+      expect(keyUpMock).toHaveBeenCalledTimes(1);
+      expect(keyUpMock).toHaveBeenCalledWith('D#5', expect.any(Number));
+
+      qh.destroy();
+    });
+
+    it('releases the original note when Shift changes the reported key', () => {
+      const qh = new QwertyHancock({ startNote: 'C4' });
+      const keyUpMock = jest.fn();
+      qh.keyUp = keyUpMock;
+
+      pressKey('a', { code: 'KeyA' });
+      releaseKey('A', { code: 'KeyA', shiftKey: true });
+
+      expect(keyUpMock).toHaveBeenCalledTimes(1);
+      expect(keyUpMock).toHaveBeenCalledWith('C4', expect.any(Number));
 
       qh.destroy();
     });
@@ -220,6 +267,48 @@ describe('Qwerty Hancock', () => {
       expect(keyUpMock).toHaveBeenCalledWith('C4', expect.any(Number));
 
       qh.destroy();
+    });
+  });
+
+  describe('Mouse Input', () => {
+    it('ignores the list when a pressed pointer slides off the keys', () => {
+      const keyDownMock = jest.fn();
+      const keyUpMock = jest.fn();
+      keyboard.keyDown = keyDownMock;
+      keyboard.keyUp = keyUpMock;
+      const key = element?.querySelector<HTMLElement>('li');
+      const list = element?.querySelector<HTMLElement>('ul');
+      if (!key || !list) throw new Error('Keyboard was not rendered');
+
+      mouseEvent(key, 'mousedown');
+      mouseEvent(key, 'mouseout');
+      mouseEvent(list, 'mouseover');
+      mouseEvent(list, 'mouseup');
+      mouseEvent(key, 'mouseover');
+
+      expect(keyDownMock).toHaveBeenCalledTimes(1);
+      expect(keyUpMock).toHaveBeenCalledTimes(1);
+      expect(keyDownMock).toHaveBeenCalledWith(key.title, expect.any(Number));
+      expect(keyUpMock).toHaveBeenCalledWith(key.title, expect.any(Number));
+      expect(list.style.backgroundColor).toBe('');
+      expect(key.style.backgroundColor).toBe('rgb(255, 255, 255)');
+    });
+
+    it('releases the active key if the pointer is released outside the keyboard', () => {
+      const keyDownMock = jest.fn();
+      const keyUpMock = jest.fn();
+      keyboard.keyDown = keyDownMock;
+      keyboard.keyUp = keyUpMock;
+      const key = element?.querySelector<HTMLElement>('li');
+      if (!key) throw new Error('Keyboard was not rendered');
+
+      mouseEvent(key, 'mousedown');
+      mouseEvent(document, 'mouseup');
+
+      expect(keyDownMock).toHaveBeenCalledTimes(1);
+      expect(keyUpMock).toHaveBeenCalledTimes(1);
+      expect(keyUpMock).toHaveBeenCalledWith(key.title, expect.any(Number));
+      expect(key.style.backgroundColor).toBe('rgb(255, 255, 255)');
     });
   });
 
